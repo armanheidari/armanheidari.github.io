@@ -7,6 +7,7 @@
 
 :root {
     --dark-background: #2D2A2E;
+    --light-background: #ffffff;
 }
 
 * {
@@ -16,25 +17,54 @@
 }
 
 body {
-    background-color: var(--dark-background);
+    /* background-color: var(--dark-background); */
+    background-color: var(--light-background);
 }
 
 
 /* ! ======================== HEADER ======================== ! */
 
 .header {
-    display: block;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    border-radius: 0 0 60% 60%;
+    padding: 2vw 0;
+    background-color: #071013;
+    animation: flyinY 2s ease-in-out;
+}
+
+@keyframes flyinY {
+	0% {
+		transform: translateY(-40vh);
+	}
+	100% {
+		transform: translateY(0);
+	}
 }
 
 .profile_image {
     display: block;
 }
 
-.welcome {
-    display: inline-block;
+#pimage {
+    border-radius: 50%;
+    border: rgba(179, 179, 179, 0.5) 0.2vw double;
+    width: 15vw;
+    height: 15vw;
+}
+
+.htext {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    width: 40vw;
+    margin-top: 5vw;
+    margin-left: 2vw;
 }
 
 .typed {
+    display: inline-block;
     overflow: hidden;
     font-size: 2vw;
     border-right: 0.2vw solid aliceblue;
@@ -67,7 +97,26 @@ body {
 }
 
 .social_links {
-    display: block;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    padding-left: 0.5vw;
+    padding-bottom: 2vw;
+}
+
+#linkedin {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    margin-right: 0.3vw;
+}
+
+#github {
+    display: inline-block;
+    filter: invert(100);
+    width: 28px;
+    height: 28px;
 }
 
 /* ! ======================== HEADER ======================== ! */
