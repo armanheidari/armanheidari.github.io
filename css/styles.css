@@ -1,0 +1,77 @@
+@font-face {
+    font-family: codefont;
+    src: url('../fonts/SourceCodePro-LightItalic.ttf');
+    font-weight: 400;
+    font-style: normal;
+}
+
+:root {
+    --dark-background: #2D2A2E;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--dark-background);
+}
+
+
+/* ! ======================== HEADER ======================== ! */
+
+.header {
+    display: block;
+}
+
+.profile_image {
+    display: block;
+}
+
+.welcome {
+    display: inline-block;
+}
+
+.typed {
+    overflow: hidden;
+    font-size: 2vw;
+    border-right: 0.2vw solid aliceblue;
+    font-family: codefont !important;
+    white-space: nowrap;
+    width: -moz-fit-content;
+    width: fit-content;
+    animation: blink 0.7s infinite;
+}
+
+@keyframes blink {
+    from { border-color: transparent; }
+    to { border-color: aliceblue; }
+}
+
+.func {
+    color: #A9DC76;
+}
+
+.paran {
+    color: #FF6188;
+}
+
+.typed pre {
+    display: inline-block;
+}
+
+.str {
+    color: #FFD866;
+}
+
+.social_links {
+    display: block;
+}
+
+/* ! ======================== HEADER ======================== ! */
+
+/* ! ======================== HEADER ======================== ! */
+
+/* ! ======================== HEADER ======================== ! */
