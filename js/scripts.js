@@ -1,3 +1,5 @@
+const header = document.querySelector(".header")
+
 function typeHeader() {
     const content = "print(\"Welcome to my portfolio...\")"
 
@@ -24,4 +26,4 @@ function typeHeader() {
     }
 }
 
-typeHeader();
+header.addEventListener("animationend", typeHeader)
