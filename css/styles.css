@@ -29,7 +29,8 @@ body {
     flex-direction: row;
     justify-content: center;
     border-radius: 0 0 60% 60%;
-    padding: 2vw 0;
+    padding-top: 1vw;
+    padding-bottom: 2vw;
     background-color: #071013;
     animation: flyinY 2s ease-in-out;
 }
@@ -119,7 +120,30 @@ body {
     height: 28px;
 }
 
-/* ! ======================== HEADER ======================== ! */
+/* ! ======================== ABOUT ======================== ! */
+
+.about_section {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 2.5vw;
+}
+
+#illustration1 {
+    width: 25VW;
+    height: 25vw;
+    /* transition: src 0.5s; */
+    animation-fill-mode: both;
+}
+
+.about_text {
+    display: block;
+    border-radius: 0.5vw;
+    background-color: #6D696A;
+    padding: 0.5vw;
+    width: 40vw;
+}
 
 /* ! ======================== HEADER ======================== ! */
 
