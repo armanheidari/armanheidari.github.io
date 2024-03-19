@@ -28,30 +28,3 @@ function typeHeader() {
 }
 
 header.addEventListener("animationend", typeHeader)
-
-let imageNumber = 1;
-let intervalId
-
-function startChangingImage() {
-    intervalId = setInterval(changeImage, 1000);
-}
-
-function stopChangingImage() {
-    clearInterval(intervalId);
-}
-
-function changeImage() {
-    clay.style.opacity = 1;
-    setTimeout(function() {
-        imageNumber++;
-        if (imageNumber > 100) {
-            imageNumber = 1;
-        }
-        clay.src = 'images/Assets/Clay_Black' + ("000" + imageNumber).slice(-4) + '.png';
-        clay.style.opacity = 0.7;
-        console.log(imageNumber)
-    }, 500);
-}
-
-clay.addEventListener("mouseover", startChangingImage)
-clay.addEventListener("mouseout", stopChangingImage)

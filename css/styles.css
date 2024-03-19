@@ -133,8 +133,6 @@ body {
 #illustration1 {
     width: 25VW;
     height: 25vw;
-    /* transition: src 0.5s; */
-    animation-fill-mode: both;
 }
 
 .about_text {
