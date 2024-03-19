@@ -5,6 +5,20 @@
     font-style: normal;
 }
 
+@font-face {
+    font-family: signika-b;
+    src: url('../fonts/Signika-Bold.ttf');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: signika-l;
+    src: url('../fonts/Signika-Light.ttf');
+    font-weight: 400;
+    font-style: normal;
+}
+
 :root {
     --dark-background: #2D2A2E;
     --light-background: #ffffff;
@@ -122,25 +136,44 @@ body {
 
 /* ! ======================== ABOUT ======================== ! */
 
-.about_section {
+.about {
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
-    align-items: center;
+    justify-content: flex-start;
+    align-items: flex-start;
+    margin: auto;
     margin-top: 2.5vw;
+    width: 90vw;
 }
 
 #illustration1 {
-    width: 25VW;
-    height: 25vw;
+    width: calc(15vw * 1.22);
+    height: 15vw;
 }
 
 .about_text {
-    display: block;
-    border-radius: 0.5vw;
-    background-color: #6D696A;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    width: 100%;
+}
+
+.about_text_title {
+    font-size: 4vw;
+    font-family: signika-b;
+    color: var(--dark-background);
+    text-align: left;
+    width: 70%;
+}
+
+.about_text_content {
+    font-size: 1.25vw;
+    font-family: signika-l;
+
     padding: 0.5vw;
-    width: 40vw;
+    margin-top: 0.5vw;
+    width: 70%;
 }
 
 /* ! ======================== HEADER ======================== ! */
