@@ -1,4 +1,5 @@
 const header = document.querySelector(".header")
+const clay = document.getElementById("illustration1")
 
 function typeHeader() {
     const content = "print(\"Welcome to my portfolio...\")"
