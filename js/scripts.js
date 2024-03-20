@@ -28,3 +28,5 @@ function typeHeader() {
 }
 
 header.addEventListener("animationend", typeHeader)
+
+console.log(window.innerWidth)
