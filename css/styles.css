@@ -171,11 +171,11 @@ body {
 }
 
 .card:nth-child(3) {
-    background-image: url("../images/bg_yellow.png");
+    background-image: url("../images/bg_pink.png");
 }
 
 .card:nth-child(4) {
-    background-image: url("../images/bg_pink.png");
+    background-image: url("../images/bg_yellow.png");
 }
 
 .title {
@@ -273,7 +273,23 @@ body {
     height: 10px;
     background: white;
     border-radius: 999px;
-    border: 3px solid #FF1654;
+    border: 3px solid;
+}
+
+.card:nth-child(1) .card_text .title::before {
+    border-color: #A9DC76;
+}
+
+.card:nth-child(2) .card_text .title::before {
+    border-color: #5FBFF9;
+}
+
+.card:nth-child(3) .card_text .title::before {
+    border-color: #FF6188;
+}
+
+.card:nth-child(4) .card_text .title::before {
+    border-color: #FFD866;
 }
 
 /* text right if the card is even  */
