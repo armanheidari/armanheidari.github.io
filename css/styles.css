@@ -145,11 +145,13 @@ body {
     justify-content: flex-start;
     align-items: center;
     margin: auto;
+    border-radius: 50px;
     width: 90vw;
 }
 
 .illustration {
-    display: block;
+    width: 35vw;
+    height: 35vw;
 }
 
 .card_text {
@@ -158,6 +160,22 @@ body {
     align-items: center;
 
     width: 100%;
+}
+
+.card:nth-child(1) {
+    background-image: url("../images/bg_green.png");
+}
+
+.card:nth-child(2) {
+    background-image: url("../images/bg_blue.png");
+}
+
+.card:nth-child(3) {
+    background-image: url("../images/bg_yellow.png");
+}
+
+.card:nth-child(4) {
+    background-image: url("../images/bg_pink.png");
 }
 
 .title {
@@ -169,8 +187,10 @@ body {
 }
 
 .content {
-    font-size: 1.25vw;
+    font-size: 1.5vw;
     font-family: signika-l;
+    text-align: justify;
+    overflow: visible;
 
     padding: 0.5vw;
     margin-top: 0.5vw;
@@ -229,13 +249,11 @@ body {
 /* Removing the border if it is the last card  and it's odd */
 .card:last-child:nth-child(odd)::before {
     border-bottom: 0;
-    border-bottom-left-radius: 0;
 }
 
 /* Removing the border if it is the last card  and it's even */
 .card:last-child:nth-child(even)::before {
     border-bottom: 0;
-    border-bottom-right-radius: 0;
 }
 
 /* Information about the timeline */
