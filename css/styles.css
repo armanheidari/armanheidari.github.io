@@ -201,7 +201,6 @@ body {
     width: 70%;
 }
 
-/* setting padding based on even or odd */
 .card:nth-child(odd) {
     padding: 30px 0 30px 30px;
     flex-direction: row;
@@ -210,7 +209,6 @@ body {
     padding: 30px 30px 30px 0;
     flex-direction: row-reverse;
 }
-/* Global ::before */
 .card::before {
     content: "";
     position: absolute;
@@ -218,7 +216,6 @@ body {
     border: dashed #A2A7A5;
 }
 
-/* Setting the border of top, bottom, left */
 .card:nth-child(odd)::before {
     left: 0px;
     top: -4.5px;
@@ -227,7 +224,6 @@ body {
     border-radius: 50px 0 0 50px;
 }
 
-/* Setting the top and bottom to "-5px" because earlier it was out of a pixel in mobile devices */
 @media only screen and (max-width: 400px) {
 .card:nth-child(odd)::before {
     top: -5px;
@@ -235,7 +231,6 @@ body {
 }
 }
 
-/* Setting the border of top, bottom, right */
 .card:nth-child(even)::before {
     right: 0;
     top: 0;
@@ -244,23 +239,19 @@ body {
     border-radius: 0 50px 50px 0;
 }
 
-/* Removing the border if it is the first card */
 .card:first-child::before {
     border-top: 0;
     border-top-left-radius: 0;
 }
 
-/* Removing the border if it is the last card  and it's odd */
 .card:last-child:nth-child(odd)::before {
     border-bottom: 0;
 }
 
-/* Removing the border if it is the last card  and it's even */
 .card:last-child:nth-child(even)::before {
     border-bottom: 0;
 }
 
-/* Information about the timeline */
 .info {
     display: flex;
     flex-direction: column;
@@ -300,17 +291,14 @@ body {
     border-color: #924DBF;
 }
 
-/* text right if the card is even  */
 .card:nth-child(even) > .info > .title {
 text-align: right;
 }
 
-/* setting dot to the left if the card is odd */
 .card:nth-child(odd) > .info > .title::before {
 left: -45px;
 }
 
-/* setting dot to the right if the card is odd */
 .card:nth-child(even) > .info > .title::before {
 right: -45px;
 }
@@ -321,7 +309,11 @@ right: -45px;
     text-align: center;
 }
 
-.slides {
+.slider {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
     font-size: 1.5vw;
     font-family: signika-l;
     text-align: justify;
@@ -332,9 +324,65 @@ right: -45px;
     margin-top: 1vw;
 }
 
-.project_image {
-    width: 65vw;
-    height: calc(65vw * 0.53125);
+.nav_btn {
+    width: 5vw;
+    height: 5vw;
+    cursor: pointer;
+    z-index: 5;
+}
+
+.p_img_container {
+    position: relative;
+    width: 55vw;
+    height: calc(55vw * 0.53125);
     border-radius: 50px;
-    opacity: 0.9;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(255, 255, 255, 0.19);
+    overflow: hidden;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+.p_img {
+    width: 100%;
+    height: 100%;
+}
+
+.p_text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+}
+
+.p_text:hover {
+    background-color: rgba(7,16,19, 0.5);
+    justify-content: flex-start;
+}
+
+.p_title {
+    width: 100%;
+    height: 4vw;
+    text-align: center;
+    line-height: 4vw;
+    font-size: 2vw;
+    font-family: signika-l;
+    background-color: rgba(7,16,19, 0.5);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.p_description {
+    width: 100%;
+    padding: 1vw 2vw;
+    font-size: 1.5vw;
+    font-family: signika-l;
+    background-color: rgba(7,16,19, 0.5);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.p_hover {
+    background-color: transparent;
 }
