@@ -218,7 +218,7 @@ export class ScrollController {
   updateHUD() {
     // Hero Text Fadeout past Stage 1 & Brand Title Smooth Fadein
     if (this.heroOverlay) {
-      if (this.scrollProgress > 0.18) {
+      if (this.scrollProgress > 0.02) {
         this.heroOverlay.classList.add('hidden');
         if (this.brandTitle) this.brandTitle.classList.add('visible');
       } else {

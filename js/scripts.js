@@ -42,28 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
   function updatePreloader() {
     loadProgress += Math.floor(Math.random() * 12) + 8;
     if (loadProgress > 100) loadProgress = 100;
-
-    const ratio = loadProgress / 100;
-
-    // Dynamically transition HTML Loader Orb styling
-    if (loaderOrb) {
-      const grayPercent = Math.max(0, 100 - loadProgress * 1.05);
-      const brightness = 0.45 + ratio * 0.75;
-      const glowDist = `${Math.floor(8 + ratio * 40)}px`;
-      const glowAlpha = (0.2 + ratio * 0.7).toFixed(2);
-
-      loaderOrb.style.setProperty('--orb-gray', `${grayPercent}%`);
-      loaderOrb.style.setProperty('--orb-bright', brightness.toFixed(2));
-      loaderOrb.style.setProperty('--orb-glow-dist', glowDist);
-      loaderOrb.style.setProperty('--orb-glow-col', `rgba(100, 210, 255, ${glowAlpha})`);
-    }
-
-    if (loaderRing) {
-      const ringAlpha = (0.2 + ratio * 0.8).toFixed(2);
-      loaderRing.style.setProperty('--ring-t', `rgba(100, 210, 255, ${ringAlpha})`);
-      loaderRing.style.setProperty('--ring-r', `rgba(175, 82, 222, ${ringAlpha})`);
-    }
-
     if (loaderBar) loaderBar.style.width = `${loadProgress}%`;
     if (loaderPercent) loaderPercent.textContent = `${loadProgress}%`;
 
@@ -72,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       // 100% Load Completed!
       if (loaderOrbWrapper) loaderOrbWrapper.classList.add('exploding');
-      
+
       // Trigger WebGL Node Explosion and Star Particle expansion outward to actual positions
       triggerStarExplosion(() => {
         // Once stars reach their target positions: reveal overlays & unlock scroll!

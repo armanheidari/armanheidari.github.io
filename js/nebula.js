@@ -21,7 +21,7 @@ let onExplosionCompleteCallback = null;
 export function initNebula(scene) {
   const starCount = 1800;
   const geometry = new THREE.BufferGeometry();
-  
+
   targetPositions = new Float32Array(starCount * 3);
   initialPositions = new Float32Array(starCount * 3);
   const positions = new Float32Array(starCount * 3);
@@ -199,7 +199,8 @@ export function updateNebula(time) {
   // Handle explosion and smooth particle interpolation to target positions
   if (starsParticles && isExploding) {
     if (explosionProgress < 1.0) {
-      explosionProgress += 0.022; // Smooth cubic explosion rate
+      console.log("Exploding")
+      explosionProgress += 0.0025; // Smooth cubic explosion rate
       if (explosionProgress > 1.0) explosionProgress = 1.0;
 
       // Smooth cubic ease out curve
