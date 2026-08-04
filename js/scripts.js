@@ -1,110 +1,55 @@
-const header = document.querySelector(".header")
+/**
+ * The Growing Cosmic Mind - Main Application Entry Point
+ * Arman Heidari Portfolio
+ */
 
-const p_left = document.getElementById("left")
-const p_right = document.getElementById("right")
-const p_container = document.querySelector(".p_img_container")
-const p_link = document.querySelector(".p_link")
-const p_img = document.querySelector(".p_img")
-const p_text = document.querySelector(".p_text")
-const p_title = document.querySelector(".p_title")
-const p_description = document.querySelector(".p_description")
+import { initScene, renderScene } from './scene.js';
+import { initNebula, updateNebula } from './nebula.js';
+import { NeuralNetworkSystem } from './network.js';
+import { ScrollController } from './scroll.js';
+import { InteractionController } from './interaction.js';
 
-const titles = [
-    "Toxic Comment Classifier",
-    "TSETMC ETL Analysis",
-    "Randomuser Data Pipeline"]
-const descriptions = [
-    "This project aims to create a safer digital community by identifying and classifying toxic comments on social media. Using a dataset from a Kaggle competition, the model is trained to detect six types of toxicity. The data undergoes cleaning, tokenization, and padding before being processed by the model.",
-    "The TSETMCE Stock Market Data Analysis Project is a Python-based solution that fetches, converts, and analyzes stock market data from TSETMC. It features four main components: data retrieval, conversion to CSV, data analysis, and logging. The project aims to provide insightful results through an HTML file, with each module offering customizable features.",
-    "This project is a robust and scalable data pipeline built using Python, Kafka, NocoDB, and PostgreSQL. It is designed to fetch, process, and store data in a streamlined and efficient manner. The entire system is containerized using Docker, ensuring easy setup and deployment. The data pipeline operates by downloading data from randomuser.me."
-]
-const links = [
-    "https://github.com/armanheidari/Deep-Learning-Toxic-Comment-Classifier",
-    "https://github.com/armanheidari/TSETMC-ETL-Analysis",
-    "https://github.com/armanheidari/Randomuser-Data-Pipeline"
-]
+document.addEventListener('DOMContentLoaded', () => {
+  const container = document.getElementById('canvas-container');
+  if (!container) return;
 
-function typeHeader() {
-    const content = "print(\"Welcome to my portfolio...\")"
+  // 1. Initialize WebGL Scene, Camera, Lighting & Bloom
+  const { scene, camera } = initScene(container);
 
-    let func = document.querySelector(".func")
-    let paran = document.querySelectorAll(".paran")
-    let str = document.querySelector(".str")
+  // 2. Initialize Cosmic Nebula & Starfield Particles
+  initNebula(scene);
 
-    for(let i = 0; i < content.length; i++) {
-        let index = content.length - i - 1
-        setTimeout(function() {
-            if (index < 5) {
-                func.innerHTML += content[index]
-            }
-            else if (index == 5) {
-                paran[0].innerHTML += content[index]
-            }
-            else if (index == content.length - 1) {
-                paran[1].innerHTML += content[index]
-            }
-            else {
-                str.innerHTML += content[index]
-            }
-        }, (content.length - i - 1) * 350);
-    }
-}
+  // 3. Initialize Neural Network System
+  const networkSystem = new NeuralNetworkSystem(scene);
 
-let current_img = 1
-let text_hover = 0
-function change_img(direction) {
-    if (! text_hover) {
-        // left
-        if (direction == 0) {
-            current_img -= 1
-            if (current_img == 0) {
-                current_img = titles.length
-            }
-        }
-        // right
-        else {
-            current_img += 1
-            if (current_img > titles.length) {
-                current_img = 1
-            }
-        }
-    
-        p_container.style.opacity = 0.7
-    
-        setTimeout(function() {
-            p_img.src = "images/p" + current_img + ".png"
-            p_title.innerHTML = titles[current_img - 1]
-            p_description.innerHTML = descriptions[current_img - 1]
-            p_link.href = links[current_img - 1]
-            p_container.style.opacity = 1
-        }, 150)
-    }
-}
+  // 4. Initialize Scroll & Camera Trajectory Controller
+  const scrollController = new ScrollController(camera, networkSystem);
 
-function auto_change_img() {
-    change_img(1)
-    setTimeout(auto_change_img, 4000)
-}
+  // 5. Initialize Raycasting, Spatial Labels & Glass Card Modals
+  const interactionController = new InteractionController(camera, scene, networkSystem, scrollController);
 
-function hover_change(state) {
-    text_hover = state
+  // 6. Main Animation Render Loop
+  function animate(time) {
+    requestAnimationFrame(animate);
 
-    if (text_hover == 1) {
-        p_title.classList.add("p_hover")
-        p_description.classList.add("p_hover")
-    }
-    else {
-        p_title.classList.remove("p_hover")
-        p_description.classList.remove("p_hover")
+    // Update Nebula background shader and starfield
+    updateNebula(time);
 
-    }
-}
+    // Update Scroll timeline and camera position
+    scrollController.update();
 
-header.addEventListener("animationend", typeHeader)
+    // Update Neural Network positions, scales & satellite orbits
+    networkSystem.update(time);
 
-p_text.addEventListener("mouseover", () => hover_change(1))
-p_text.addEventListener("mouseout", () => hover_change(0))
+    // Update 3D Floating Spatial Labels Screen Projections
+    interactionController.updateSpatialLabels();
 
-p_left.addEventListener("click", () => change_img(0))
-p_right.addEventListener("click", () => change_img(1))
-auto_change_img()
+    // Animate network traveling pulses
+    networkSystem.animatePulses(time);
+
+    // Render WebGL Bloom Composer
+    renderScene(time);
+  }
+
+  requestAnimationFrame(animate);
+});

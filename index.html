@@ -1,91 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/styles.css">
-    <title>Arman Heidari</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arman Heidari | The Growing Cosmic Mind</title>
+  <meta name="description"
+    content="Arman Heidari - B.Sc. Graduate in Computer Engineering from Allameh Tabataba'i University passionate about AI, Machine Learning, Deep Learning, and Reinforcement Learning.">
+  <link rel="stylesheet" href="css/styles.css">
+
+  <!-- Native Browser ES Module Import Map for Three.js -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
 </head>
+
 <body>
-    <div class="header">
-        <div class="profile_image">
-            <img id="pimage" src="images/profile.jpg" alt="profile">
-        </div>
-        <div class="htext">
-            <div class="typed">
-                <pre><span class="func"></span><span class="paran"></span><span class="str"></span><span class="paran"></span></pre>
-            </div>
-            <div class="social_links">
-                <a target="_blank" href="https://www.linkedin.com/in/arman-heidari/" rel="noopener">
-                    <img id="linkedin" src="images/linkedin.png" alt="linkedin">
-                </a>
-                <a target="_blank" href="https://github.com/armanheidari" rel="noopener">
-                    <img id="github" src="images/github.png" alt="github">
-                </a>
-            </div>
-        </div>
+
+  <!-- WebGL Fullscreen Canvas Container -->
+  <div id="canvas-container"></div>
+
+  <!-- Scroll Height Driver Container -->
+  <div class="scroll-container"></div>
+
+  <!-- 3D Floating Spatial Labels Layer -->
+  <div id="spatial-labels-container"></div>
+
+  <!-- Persistent HUD Layer -->
+  <div id="hud-overlay">
+    <!-- Brand Header -->
+    <header class="brand-header">
+      <h1 class="brand-title">Arman Heidari</h1>
+      <span class="brand-badge">Cosmic Mind</span>
+    </header>
+
+    <!-- Stage Progress Indicator Dots -->
+    <nav class="stage-indicator" aria-label="Journey Stages">
+      <div class="stage-dot active" data-stage="1" data-label="Birth"></div>
+      <div class="stage-dot" data-stage="2" data-label="Early Growth"></div>
+      <div class="stage-dot" data-stage="3" data-label="Expansion"></div>
+      <div class="stage-dot" data-stage="4" data-label="Projects"></div>
+      <div class="stage-dot" data-stage="5" data-label="Present & Beyond"></div>
+    </nav>
+  </div>
+
+  <!-- Hero Overlay Text (Stage 1) -->
+  <div class="hero-overlay">
+    <h2 class="hero-name">Arman Heidari</h2>
+    <p class="hero-subtitle">
+      B.Sc. Graduate in Computer Engineering from ATU
+    </p>
+    <div class="hero-tags">
+      <span class="tag-pill">Artificial Intelligence</span>
+      <span class="tag-pill">Machine Learning</span>
+      <span class="tag-pill">Deep Learning</span>
+      <span class="tag-pill">Reinforcement Learning</span>
+      <span class="tag-pill">Python & C++</span>
     </div>
-    <div class="timeline">
-        <div class="outer">
-            <div class="card">
-                <img class="illustration" src="images/clay1.png" alt="illustration">
-                <div class="card_text">
-                    <div class="title">About</div>
-                    <div class="content">
-                        Hello! I’m Arman Heidari, a 20-year-old programmer with a passion for AI, Data Science, and Machine Learning. Currently, I’m pursuing my Computer Engineering degree at Allameh Tabataba’i University.
-                        My journey into the world of programming began in 2020 with front-end web development. Since then, I’ve expanded my skills to include C++ and Python, applying these languages to various projects. Throughout my academic journey, I’ve strived to strike a balance between my university coursework and practical online materials, ensuring a well-rounded education in both theory and application.
-                    </div>
-                </div>
-            </div>
-            <div class="card">
-                <img class="illustration" src="images/clay2.png" alt="illustration">
-                <div class="card_text">
-                    <div class="title">Front-end</div>
-                    <div class="content">
-                        My journey into front-end development began in 2020, driven by my love for graphics and art. I believe that front-end development is the most artistic form of programming, allowing us to create visually appealing and interactive experiences for users. Over the course of two years, I honed my skills in HTML, CSS, Tailwind CSS, and Vanilla JS, applying them to various projects. Even though my primary focus has shifted to Machine Learning and AI, I still find joy in front-end development and occasionally code for pleasure. This portfolio website is a testament to my journey and skills as a web developer.
-                    </div>
-                </div>
-            </div>
-            <div class="card">
-                <img class="illustration" src="images/clay3.png" alt="illustration">
-                <div class="card_text">
-                    <div class="title">Machine Learning</div>
-                    <div class="content">
-                        In 2022, I shifted my focus to Machine Learning, a field that fascinates me with its potential to revolutionize the way we live and work. To build a solid foundation, I’ve taken courses from prestigious institutions like MIT, Stanford, and Cornell. Currently, I’m expanding my knowledge through Andrew Ng’s course, which is renowned for its practical approach to Machine Learning. While I’m still in the middle of my journey, I’m committed to learning every day and applying academic knowledge to practical projects. I believe that continuous learning and improvement are key to success in this rapidly evolving field.
-                    </div>
-                </div>
-            </div>
-            <div class="card">
-                <img class="illustration" src="images/clay4.png" alt="illustration">
-                <div class="card_text">
-                    <div class="title">Data Engineering</div>
-                    <div class="content">
-                        My curiosity about the data gathering process, which is a crucial step before designing Machine Learning models, led me to delve into the field of Data Engineering in 2024. I participated in a programming contest and was fortunate enough to gain admission to a Data Engineering course offered by Fanap Campus and Filoger. This experience provided me with a deeper understanding of the processes behind the scenes. The knowledge I gained from these classes has been invaluable and will undoubtedly aid me in my future endeavors in the realm of data.
-                    </div>
-                </div>
-            </div>
-            <div class="card projects">
-                <div class="card_text">
-                    <div class="title">Projects</div>
-                    <div class="slider">
-                        <img class="nav_btn" src="images/left.png" alt="left" id="left">
-                        <div class="p_img_container">
-                            <a class="p_link" target="_blank" href="https://github.com/armanheidari/Deep-Learning-Toxic-Comment-Classifier" rel="noopener">
-                                <img class="p_img" src="images/p1.png" alt="project">
-                                <div class="p_text">
-                                    <div class="p_title">Toxic Comment Classifier</div>
-                                    <div class="p_description">
-                                        This project aims to create a safer digital community by identifying and classifying toxic comments on social media. Using a dataset from a Kaggle competition, the model is trained to detect six types of toxicity. The data undergoes cleaning, tokenization, and padding before being processed by the model.
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        <img class="nav_btn" src="images/right.png" alt="right" id="right">
-                    </div>
-                </div>
-            </div>
-        </div>
+  </div>
+
+  <!-- Initial Scroll Arrow Indicator (Critical Detail: Permanent Fadeout on Scroll) -->
+  <div class="scroll-indicator">
+    <span class="scroll-text">Scroll to explore</span>
+    <svg class="scroll-arrow" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M7 10l5 5 5-5" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  </div>
+
+  <!-- Floating 3D Glass Content Modal Cards Container -->
+  <div id="modal-container" role="dialog" aria-modal="true">
+    <div class="glass-modal">
+      <button class="modal-close-btn" aria-label="Close modal">&times;</button>
+      <div class="modal-category">Category</div>
+      <h3 class="modal-title">Node Title</h3>
+      <div class="modal-subtitle">Node Subtitle</div>
+      <p class="modal-body">Node detailed content description goes here...</p>
+      <ul class="modal-highlights"></ul>
+      <div class="modal-tags"></div>
+      <div class="modal-actions"></div>
     </div>
-    <script src="js/scripts.js"></script>
+  </div>
+
+  <!-- Application Entry Point -->
+  <script type="module" src="js/scripts.js"></script>
+
 </body>
+
 </html>
