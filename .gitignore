@@ -1,0 +1,9 @@
+# Admin & Dev Factory Tools (Private)
+factory.html
+admin/
+
+# OS / Editor Files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
