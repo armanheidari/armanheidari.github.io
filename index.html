@@ -20,7 +20,21 @@
   </script>
 </head>
 
-<body>
+<body class="loading">
+
+  <!-- Cinematic Cosmic Loading Screen Overlay -->
+  <div id="loading-screen">
+    <div class="loader-content">
+      <div class="loader-orb-wrapper" id="loader-orb-wrapper">
+        <div class="loader-shockwave"></div>
+      </div>
+      <div class="loader-title">INITIALIZING COSMIC MIND</div>
+      <div class="loader-bar-track">
+        <div class="loader-bar-fill" id="loader-bar"></div>
+      </div>
+      <div class="loader-percentage" id="loader-percent">0%</div>
+    </div>
+  </div>
 
   <!-- WebGL Fullscreen Canvas Container -->
   <div id="canvas-container"></div>
@@ -36,7 +50,7 @@
     <!-- Brand Header -->
     <header class="brand-header">
       <h1 class="brand-title">Arman Heidari</h1>
-      <span class="brand-badge">Cosmic Mind</span>
+      <span class="brand-badge">The Cosmic Mind</span>
     </header>
 
     <!-- Stage Progress Indicator Dots -->
@@ -64,7 +78,7 @@
     </div>
   </div>
 
-  <!-- Initial Scroll Arrow Indicator (Critical Detail: Permanent Fadeout on Scroll) -->
+  <!-- Initial Scroll Arrow Indicator -->
   <div class="scroll-indicator">
     <span class="scroll-text">Scroll to explore</span>
     <svg class="scroll-arrow" viewBox="0 0 24 24" aria-hidden="true">

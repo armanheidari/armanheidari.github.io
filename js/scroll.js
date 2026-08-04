@@ -11,11 +11,11 @@ export class ScrollController {
   constructor(camera, networkSystem) {
     this.camera = camera;
     this.networkSystem = networkSystem;
-    
+
     // Scroll progress variables
     this.scrollProgress = 0.0;
     this.targetScrollProgress = 0.0;
-    
+
     // Mouse Parallax variables
     this.mouseX = 0;
     this.mouseY = 0;
@@ -34,6 +34,7 @@ export class ScrollController {
 
     // UI Elements
     this.heroOverlay = document.querySelector('.hero-overlay');
+    this.brandTitle = document.querySelector('.brand-title');
     this.stageDots = document.querySelectorAll('.stage-dot');
 
     this.initListeners();
@@ -41,6 +42,12 @@ export class ScrollController {
   }
 
   updateScrollProgress() {
+    if (document.body.classList.contains('loading')) {
+      window.scrollTo(0, 0);
+      this.targetScrollProgress = 0;
+      this.scrollProgress = 0;
+      return;
+    }
     const scrollHeight = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
     const currentY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
     this.targetScrollProgress = Math.max(0, Math.min(1, currentY / scrollHeight));
@@ -51,9 +58,21 @@ export class ScrollController {
         this.scrollIndicatorEl.classList.add('faded');
       }
     }
+    else if (this.scrollProgress <= 0.02 || currentY <= 15) {
+      this.hasScrolled = false;
+      if (this.scrollIndicatorEl) {
+        this.scrollIndicatorEl.classList.remove('faded');
+      }
+    }
   }
 
   initListeners() {
+    // Reset scroll restoration
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+    window.scrollTo(0, 0);
+
     // 1. Native Window Scroll Event
     window.addEventListener('scroll', () => {
       this.updateScrollProgress();
@@ -61,6 +80,7 @@ export class ScrollController {
 
     // 2. Mouse Wheel Scroll Event
     window.addEventListener('wheel', (e) => {
+      if (document.body.classList.contains('loading')) return;
       // Direct wheel scroll driver
       window.scrollBy({ top: e.deltaY, behavior: 'instant' });
       this.updateScrollProgress();
@@ -75,6 +95,7 @@ export class ScrollController {
     }, { passive: true });
 
     window.addEventListener('touchmove', (e) => {
+      if (document.body.classList.contains('loading')) return;
       if (e.touches.length > 0) {
         const touchY = e.touches[0].clientY;
         const deltaY = (touchStartY - touchY) * 1.5;
@@ -90,6 +111,7 @@ export class ScrollController {
 
     // 4. Keyboard Arrow / Page Navigation
     window.addEventListener('keydown', (e) => {
+      if (document.body.classList.contains('loading')) return;
       if (['ArrowDown', 'PageDown', ' '].includes(e.key)) {
         window.scrollBy({ top: 300, behavior: 'smooth' });
       } else if (['ArrowUp', 'PageUp'].includes(e.key)) {
@@ -194,12 +216,14 @@ export class ScrollController {
   }
 
   updateHUD() {
-    // Hero Text Fadeout past Stage 1
+    // Hero Text Fadeout past Stage 1 & Brand Title Smooth Fadein
     if (this.heroOverlay) {
-      if (this.scrollProgress > 0.18) {
+      if (this.scrollProgress > 0.02) {
         this.heroOverlay.classList.add('hidden');
+        if (this.brandTitle) this.brandTitle.classList.add('visible');
       } else {
         this.heroOverlay.classList.remove('hidden');
+        if (this.brandTitle) this.brandTitle.classList.remove('visible');
       }
     }
 
