@@ -1,0 +1,231 @@
+---
+// src/pages/skills/[slug].astro
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { skillCategories, type SkillCategory } from '../../data/skills';
+
+export function getStaticPaths() {
+  return skillCategories.map((category, index) => {
+    // If index === 0, previous is Section 06: Education & Honors
+    const prev = index > 0
+      ? {
+          label: "Previous Category",
+          title: skillCategories[index - 1].title,
+          href: `/skills/${skillCategories[index - 1].slug}`
+        }
+      : {
+          label: "Previous Section",
+          title: "06 - Selected Projects",
+          href: `/#projects`
+        };
+
+    // If index === last, next is Section 01: About Me / Hub
+    const next = index < skillCategories.length - 1
+      ? {
+          label: "Next Category",
+          title: skillCategories[index + 1].title,
+          href: `/skills/${skillCategories[index + 1].slug}`
+        }
+      : {
+          label: "Return to Hub",
+          title: "01 - About Me",
+          href: `/#about`
+        };
+
+    return {
+      params: { slug: category.slug },
+      props: { category, prev, next },
+    };
+  });
+}
+
+const { category, prev, next } = Astro.props as {
+  category: SkillCategory;
+  prev: { label: string; title: string; href: string };
+  next: { label: string; title: string; href: string };
+};
+---
+
+<BaseLayout
+  title={`${category.title} | Technical Skills | Arman Heidari`}
+  description={category.overview}
+>
+  <div class="space-y-8 sm:space-y-10">
+    <!-- Breadcrumb & Back Navigation directly to the card on hub -->
+    <div class="flex items-center justify-between">
+      <a
+        href={`/#card-${category.slug}`}
+        class="group inline-flex items-center gap-2 text-xs font-mono font-medium text-zinc-500 hover:text-violet-600 dark:text-zinc-400 dark:hover:text-violet-400 transition-colors"
+      >
+        <svg class="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m15 18-6-6 6-6"/>
+        </svg>
+        <span>Back to Skills Hub</span>
+      </a>
+
+      <span class="text-xs font-mono text-zinc-400 dark:text-zinc-500">
+        07 - Skills & Stack
+      </span>
+    </div>
+
+    <!-- Header Hero Card -->
+    <header class="p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#12151e] border border-zinc-200/80 dark:border-zinc-800 shadow-xs space-y-6">
+      <div class="flex flex-wrap items-start justify-between gap-5">
+        <div class="flex items-start gap-4">
+          <!-- Category Icon Box -->
+          <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-violet-50 dark:bg-violet-950/60 border border-violet-200/60 dark:border-violet-800/60 flex items-center justify-center shrink-0 text-violet-600 dark:text-violet-400 shadow-xs">
+            {category.icon === 'brain' && (
+              <svg class="w-7 h-7 sm:w-8 sm:h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-2.04z" />
+                <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-4.44-2.04z" />
+              </svg>
+            )}
+            {category.icon === 'bot' && (
+              <svg class="w-7 h-7 sm:w-8 sm:h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="18" height="12" x="3" y="6" rx="2" />
+                <path d="M9 10h.01" /><path d="M15 10h.01" />
+                <path d="M12 2v4" /><path d="M10 14a2 2 0 0 0 4 0" />
+              </svg>
+            )}
+            {category.icon === 'code' && (
+              <svg class="w-7 h-7 sm:w-8 sm:h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="16 18 22 12 16 6" />
+                <polyline points="8 6 2 12 8 18" />
+              </svg>
+            )}
+            {category.icon === 'chart' && (
+              <svg class="w-7 h-7 sm:w-8 sm:h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 3v18h18" />
+                <path d="m19 9-5 5-4-4-3 3" />
+              </svg>
+            )}
+            {category.icon === 'layout' && (
+              <svg class="w-7 h-7 sm:w-8 sm:h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="18" height="18" x="3" y="3" rx="2" />
+                <path d="M3 9h18" /><path d="M9 21V9" />
+              </svg>
+            )}
+            {category.icon === 'terminal' && (
+              <svg class="w-7 h-7 sm:w-8 sm:h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="4 17 10 11 4 5" />
+                <line x1="12" x2="20" y1="19" y2="19" />
+              </svg>
+            )}
+          </div>
+
+          <div class="space-y-1.5">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-semibold bg-violet-50 dark:bg-violet-950/60 text-violet-700 dark:text-violet-300 border border-violet-200/60 dark:border-violet-800/60">
+                Technical Stack
+              </span>
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300">
+                {category.skills.length} Tools & Frameworks
+              </span>
+            </div>
+
+            <h1 class="text-xl sm:text-3xl font-extrabold text-zinc-900 dark:text-white tracking-tight">
+              {category.title}
+            </h1>
+          </div>
+        </div>
+      </div>
+
+      <!-- Overview Paragraph -->
+      <div class="pt-4 border-t border-zinc-100 dark:border-zinc-800/80 space-y-2">
+        <h2 class="text-xs font-mono uppercase tracking-wider font-semibold text-zinc-400 dark:text-zinc-500">
+          Domain Overview & Technical Focus
+        </h2>
+        <p class="text-sm sm:text-base text-zinc-700 dark:text-zinc-300 leading-relaxed">
+          {category.overview}
+        </p>
+      </div>
+    </header>
+
+    <!-- Specific Skills & Tools Breakdown -->
+    <section class="p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#12151e] border border-zinc-200/80 dark:border-zinc-800 shadow-xs space-y-6">
+      <div class="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800/80 pb-3">
+        <div class="flex items-center gap-3">
+          <div class="w-2.5 h-5 rounded-full bg-violet-600"></div>
+          <div>
+            <h2 class="text-lg sm:text-xl font-bold text-zinc-900 dark:text-white">
+              Core Frameworks, Tools & Methodologies
+            </h2>
+            <p class="text-xs text-zinc-400 dark:text-zinc-500 mt-0.5">
+              Specific technologies and their practical application in research & software engineering
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Skills Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+        {category.skills.map((skill) => (
+          <div class="p-4 sm:p-4.5 rounded-2xl bg-zinc-50/70 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/60 space-y-2">
+            <div class="flex items-start justify-between gap-2">
+              <h3 class="text-sm font-bold text-zinc-900 dark:text-zinc-100">
+                {skill.name}
+              </h3>
+              <div class="flex items-center gap-1.5 shrink-0">
+                {skill.badge && (
+                  <span class="px-1.5 py-0.2 rounded text-[10px] font-mono font-semibold bg-violet-100 dark:bg-violet-900/60 text-violet-700 dark:text-violet-300">
+                    {skill.badge}
+                  </span>
+                )}
+                <span class:list={[
+                  "px-2 py-0.5 rounded-full text-[10px] font-mono font-medium border",
+                  skill.level === 'Core'
+                    ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200/60 dark:border-emerald-800/60"
+                    : skill.level === 'Proficient'
+                    ? "bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border-blue-200/60 dark:border-blue-800/60"
+                    : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border-zinc-200/60 dark:border-zinc-700/60"
+                ]}>
+                  {skill.level}
+                </span>
+              </div>
+            </div>
+
+            <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+              {skill.description}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+
+
+    <!-- Bottom Navigation: Prev / Next Switcher Between Categories & Sections -->
+    <div class="pt-6 border-t border-zinc-200/60 dark:border-zinc-800/60 grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <!-- Previous Button -->
+      <a
+        href={prev.href}
+        class="group flex flex-col p-4 rounded-2xl bg-white dark:bg-[#12151e] border border-zinc-200/80 dark:border-zinc-800 hover:border-violet-500/50 dark:hover:border-violet-500/40 hover:shadow-md transition-all text-left min-w-0 overflow-hidden"
+      >
+        <span class="text-[11px] font-mono font-semibold text-zinc-400 dark:text-zinc-500 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors flex items-center gap-1.5 shrink-0">
+          <svg class="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m15 18-6-6 6-6"/>
+          </svg>
+          <span class="truncate">{prev.label}</span>
+        </span>
+        <span class="text-sm font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors mt-1 line-clamp-2 leading-snug break-words">
+          {prev.title}
+        </span>
+      </a>
+
+      <!-- Next Button -->
+      <a
+        href={next.href}
+        class="group flex flex-col p-4 rounded-2xl bg-white dark:bg-[#12151e] border border-zinc-200/80 dark:border-zinc-800 hover:border-violet-500/50 dark:hover:border-violet-500/40 hover:shadow-md transition-all text-right sm:items-end min-w-0 overflow-hidden"
+      >
+        <span class="text-[11px] font-mono font-semibold text-zinc-400 dark:text-zinc-500 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors flex items-center gap-1.5 justify-end shrink-0">
+          <span class="truncate">{next.label}</span>
+          <svg class="w-3.5 h-3.5 transition-transform group-hover:translate-x-1 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m9 18 6-6-6-6"/>
+          </svg>
+        </span>
+        <span class="text-sm font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors mt-1 line-clamp-2 leading-snug break-words">
+          {next.title}
+        </span>
+      </a>
+    </div>
+  </div>
+</BaseLayout>

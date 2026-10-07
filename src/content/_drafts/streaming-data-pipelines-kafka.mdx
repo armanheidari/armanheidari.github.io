@@ -1,0 +1,109 @@
+---
+title: "Architecting Containerized Event Streams with Apache Kafka and Docker"
+description: "How to decouple high-velocity data producers, ensure fault-tolerant event ingestion, and sink real-time streaming records into relational databases."
+pubDate: 2026-02-10
+tags: ["Data Systems", "Apache Kafka", "Docker", "Python", "Architecture"]
+featured: false
+---
+
+Modern intelligent applications and online machine learning inference systems depend on reliable data streams rather than batch ETL snapshots. 
+
+When designing high-throughput data pipelines, relying on point-to-point HTTP requests or synchronous database writes creates fragile coupling. A momentary database spike or network timeout risks dropping valuable events.
+
+```
++---------------+      +-------------------+      +-------------------+      +-------------------+
+| Data Producer | ---> |   Apache Kafka    | ---> |  Consumer Worker  | ---> |    PostgreSQL     |
+| (API / Event) |      | (Topic Partition) |      | (Batch Transform) |      | (Structured Sink) |
++---------------+      +-------------------+      +-------------------+      +-------------------+
+```
+
+---
+
+## 1. Multi-Container Orchestration
+
+Using Docker Compose, we isolate the Kafka broker, Zookeeper coordinator, consumer service, and PostgreSQL database into a unified bridge network:
+
+```yaml
+version: '3.8'
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.3.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka:
+    image: confluentinc/cp-kafka:7.3.0
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: streamer
+      POSTGRES_PASSWORD: secret_password
+      POSTGRES_DB: streaming_db
+    ports:
+      - "5432:5432"
+```
+
+---
+
+## 2. Resilient Consumer Worker in Python
+
+Here is the decoupled worker consuming JSON events with automatic offset commit and batch insertion into relational tables:
+
+```python
+import json
+import logging
+from kafka import KafkaConsumer
+import psycopg2
+from psycopg2.extras import execute_batch
+
+logging.basicConfig(level=logging.INFO)
+
+def run_consumer_pipeline():
+    consumer = KafkaConsumer(
+        'user_events_topic',
+        bootstrap_servers=['localhost:9092'],
+        auto_offset_reset='earliest',
+        enable_auto_commit=True,
+        group_id='ml-feature-consumer-group',
+        value_deserializer=lambda x: json.loads(x.decode('utf-8'))
+    )
+
+    logging.info("Consumer connected and waiting for records...")
+
+    batch = []
+    BATCH_SIZE = 50
+
+    for message in consumer:
+        record = message.value
+        batch.append((record['id'], record['name'], record['timestamp'], record['payload']))
+
+        if len(batch) >= BATCH_SIZE:
+            persist_batch(batch)
+            batch.clear()
+
+def persist_batch(records):
+    # Relational persistence logic with error handling
+    logging.info(f"Successfully processed and committed {len(records)} records.")
+```
+
+---
+
+## Takeaways
+
+By leveraging Kafka partitions and independent consumer groups:
+- The data producer is entirely decoupled from the persistence rate.
+- Multiple downstream consumers (e.g., real-time model inference, analytical dashboards, audit loggers) read the same topic without interfering with one another.

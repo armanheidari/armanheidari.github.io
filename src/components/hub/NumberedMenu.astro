@@ -1,0 +1,284 @@
+---
+// src/components/hub/NumberedMenu.astro
+import AboutPanel from './AboutPanel.astro';
+import ResearchPanel from './ResearchPanel.astro';
+import ProjectsPanel from './ProjectsPanel.astro';
+import WorkExperiencePanel from './WorkExperiencePanel.astro';
+import TeachingPanel from './TeachingPanel.astro';
+import EducationPanel from './EducationPanel.astro';
+import SkillsPanel from './SkillsPanel.astro';
+
+import { publications } from '../../data/publications';
+import { projects } from '../../data/projects';
+import { workExperiences } from '../../data/experience';
+import { teachingItems } from '../../data/teaching';
+import { educationList } from '../../data/education';
+
+const sections = [
+  { id: 'about', num: '01', mobile: 'About', title: 'About Me', fullTitle: 'About Me', badge: 'Bio' },
+  { id: 'education', num: '02', mobile: 'Education', title: 'Education', fullTitle: 'Education & Honors', count: educationList.length },
+  { id: 'teaching', num: '03', mobile: 'Teaching', title: 'Teaching & Mentorship', fullTitle: 'Teaching & Mentorship', count: teachingItems.length },
+  { id: 'research', num: '04', mobile: 'Research', title: 'Research', fullTitle: 'Research & Publications', count: publications.length },
+  { id: 'work-experience', num: '05', mobile: 'Work', title: 'Work Experience', fullTitle: 'Work Experience', count: workExperiences.length },
+  { id: 'projects', num: '06', mobile: 'Projects', title: 'Selected Projects', fullTitle: 'Selected Projects', count: projects.length },
+  { id: 'skills', num: '07', mobile: 'Skills', title: 'Skills', fullTitle: 'Skills', badge: 'Stack' }
+];
+---
+
+<section id="sections-hub" class="w-full relative scroll-mt-16 flex flex-col">
+  <!-- Sticky Navigation Ribbon directly below the 64px Header -->
+  <div class="sticky top-16 z-40 w-full bg-stone-50/95 dark:bg-[#0c0e14]/95 backdrop-blur-md border-y border-zinc-200/70 dark:border-zinc-800/70 py-2 sm:py-2.5 shadow-2xs transition-colors">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6">
+      <div
+        class="grid grid-cols-3 gap-1.5 md:flex md:flex-nowrap md:items-center md:justify-center md:gap-2 lg:gap-2.5 w-full"
+        role="tablist"
+        aria-label="Portfolio Sections Menu"
+      >
+        {sections.map((sec, idx) => (
+          <button
+            type="button"
+            role="tab"
+            id={`menu-btn-${sec.id}`}
+            data-tab={sec.id}
+            aria-controls={`panel-${sec.id}`}
+            aria-selected={idx === 0 ? "true" : "false"}
+            class:list={[
+              "menu-switch-btn group relative inline-flex items-center justify-center gap-1.5 sm:gap-2 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl border text-center transition-all duration-150 select-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/40 whitespace-nowrap shrink-0",
+              idx === 6 ? "col-span-3 md:col-auto" : "",
+              idx === 0
+                ? "active border-blue-600 dark:border-blue-500 bg-blue-50/80 dark:bg-blue-950/40 text-blue-950 dark:text-blue-100 shadow-2xs font-semibold"
+                : "border-zinc-200/80 dark:border-zinc-800/80 bg-white/70 dark:bg-[#12141c]/70 text-zinc-600 dark:text-zinc-400 hover:border-zinc-300 dark:hover:border-zinc-700 hover:text-zinc-900 dark:hover:text-zinc-100"
+            ]}
+          >
+            <div class="flex items-center gap-1 sm:gap-1.5">
+              <span class:list={[
+                "menu-num font-mono text-[10px] sm:text-[11px] font-bold shrink-0 transition-colors",
+                idx === 0 ? "text-blue-600 dark:text-blue-400" : "text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-700 dark:group-hover:text-zinc-300"
+              ]}>
+                {sec.num}
+              </span>
+              <span class="font-medium text-xs whitespace-nowrap">
+                <span class="inline md:hidden">{sec.mobile}</span>
+                <span class="hidden md:inline xl:hidden">{sec.title}</span>
+                <span class="hidden xl:inline">{sec.fullTitle}</span>
+              </span>
+            </div>
+
+            <!-- Counter or badge -->
+            {sec.count !== undefined ? (
+              <span class:list={[
+                "menu-badge text-[9px] font-mono px-1.5 py-0.2 rounded-full shrink-0 transition-colors hidden sm:inline-block",
+                idx === 0
+                  ? "bg-blue-200/80 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                  : "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
+              ]}>
+                {sec.count}
+              </span>
+            ) : sec.badge ? (
+              <span class:list={[
+                "menu-badge text-[9px] font-mono px-1.5 py-0.2 rounded-full shrink-0 transition-colors hidden sm:inline-block",
+                idx === 0
+                  ? "bg-blue-200/80 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                  : "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
+              ]}>
+                {sec.badge}
+              </span>
+            ) : null}
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <!-- Section Panels Container (Natural, smooth full-page scrolling) -->
+  <div id="panels-container" class="w-full">
+    <div class="w-full max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+      <!-- 01 / About Me (Default View) -->
+      <div id="panel-about" role="tabpanel" aria-labelledby="menu-btn-about" class="tab-panel transition-opacity duration-200">
+        <AboutPanel />
+      </div>
+
+      <!-- 02 / Education & Honors -->
+      <div id="panel-education" role="tabpanel" aria-labelledby="menu-btn-education" class="tab-panel hidden transition-opacity duration-200">
+        <EducationPanel />
+      </div>
+
+      <!-- 03 / Teaching Experience -->
+      <div id="panel-teaching" role="tabpanel" aria-labelledby="menu-btn-teaching" class="tab-panel hidden transition-opacity duration-200">
+        <TeachingPanel />
+      </div>
+
+      <!-- 04 / Research & Publications -->
+      <div id="panel-research" role="tabpanel" aria-labelledby="menu-btn-research" class="tab-panel hidden transition-opacity duration-200">
+        <ResearchPanel />
+      </div>
+
+      <!-- 05 / Work Experience -->
+      <div id="panel-work-experience" role="tabpanel" aria-labelledby="menu-btn-work-experience" class="tab-panel hidden transition-opacity duration-200">
+        <WorkExperiencePanel />
+      </div>
+
+      <!-- 06 / Selected Projects -->
+      <div id="panel-projects" role="tabpanel" aria-labelledby="menu-btn-projects" class="tab-panel hidden transition-opacity duration-200">
+        <ProjectsPanel />
+      </div>
+
+      <!-- 07 / Skills -->
+      <div id="panel-skills" role="tabpanel" aria-labelledby="menu-btn-skills" class="tab-panel hidden transition-opacity duration-200">
+        <SkillsPanel />
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  function setupNumberedMenu() {
+    const buttons = document.querySelectorAll<HTMLButtonElement>('.menu-switch-btn');
+    const panels = document.querySelectorAll<HTMLElement>('.tab-panel');
+    const hub = document.getElementById('sections-hub');
+    const validTabs = ['about', 'education', 'teaching', 'research', 'work-experience', 'projects', 'skills'];
+
+    function activateSection(targetId: string, updateHash = true) {
+      if (targetId === 'experience') targetId = 'work-experience';
+      if (!validTabs.includes(targetId)) targetId = 'about';
+
+      buttons.forEach((btn) => {
+        const tabId = btn.getAttribute('data-tab');
+        const num = btn.querySelector('.menu-num');
+        const badge = btn.querySelector('.menu-badge');
+        const isActive = tabId === targetId;
+
+        btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        if (isActive) {
+          btn.classList.add('active', 'border-blue-600', 'dark:border-blue-500', 'bg-blue-50/80', 'dark:bg-blue-950/40', 'text-blue-950', 'dark:text-blue-100', 'shadow-2xs', 'font-semibold');
+          btn.classList.remove('border-zinc-200/80', 'dark:border-zinc-800/80', 'bg-white/70', 'dark:bg-[#12141c]/70', 'text-zinc-600', 'dark:text-zinc-400');
+          if (num) {
+            num.classList.add('text-blue-600', 'dark:text-blue-400');
+            num.classList.remove('text-zinc-400', 'dark:text-zinc-500');
+          }
+          if (badge) {
+            badge.classList.add('bg-blue-200/80', 'text-blue-800', 'dark:bg-blue-900', 'dark:text-blue-200');
+            badge.classList.remove('bg-zinc-100', 'text-zinc-500', 'dark:bg-zinc-800', 'dark:text-zinc-400');
+          }
+        } else {
+          btn.classList.remove('active', 'border-blue-600', 'dark:border-blue-500', 'bg-blue-50/80', 'dark:bg-blue-950/40', 'text-blue-950', 'dark:text-blue-100', 'shadow-2xs', 'font-semibold');
+          btn.classList.add('border-zinc-200/80', 'dark:border-zinc-800/80', 'bg-white/70', 'dark:bg-[#12141c]/70', 'text-zinc-600', 'dark:text-zinc-400');
+          if (num) {
+            num.classList.remove('text-blue-600', 'dark:text-blue-400');
+            num.classList.add('text-zinc-400', 'dark:text-zinc-500');
+          }
+          if (badge) {
+            badge.classList.remove('bg-blue-200/80', 'text-blue-800', 'dark:bg-blue-900', 'dark:text-blue-200');
+            badge.classList.add('bg-zinc-100', 'text-zinc-500', 'dark:bg-zinc-800', 'dark:text-zinc-400');
+          }
+        }
+      });
+
+      panels.forEach((panel) => {
+        if (panel.id === `panel-${targetId}`) {
+          panel.classList.remove('hidden');
+        } else {
+          panel.classList.add('hidden');
+        }
+      });
+
+      if (updateHash) {
+        history.replaceState(null, '', `#${targetId}`);
+      }
+    }
+
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const tabId = btn.getAttribute('data-tab');
+        if (tabId) {
+          activateSection(tabId);
+          if (hub) {
+            const hubRect = hub.getBoundingClientRect();
+            // If user has scrolled down into a section, scroll up so they view from the top of the new section
+            if (hubRect.top < 60) {
+              hub.scrollIntoView({ behavior: 'smooth' });
+            }
+          }
+        }
+      });
+    });
+
+    // Handle initial hash on page load or on hash change
+    function handleInitialOrChangedHash() {
+      const rawHash = window.location.hash.replace('#', '');
+      if (!rawHash) {
+        activateSection('about', false);
+        return;
+      }
+
+      // 1. Check if it is a card hash: e.g. 'card-xxx'
+      if (rawHash.startsWith('card-')) {
+        const cardId = rawHash;
+        const teachingPanel = document.getElementById('panel-teaching');
+        const workPanel = document.getElementById('panel-work-experience');
+        const educationPanel = document.getElementById('panel-education');
+        const skillsPanel = document.getElementById('panel-skills');
+
+        let targetSection = 'about';
+        if (teachingPanel && teachingPanel.querySelector(`#${cardId}`)) {
+          targetSection = 'teaching';
+          const mentorSub = document.getElementById('teaching-subpanel-mentorship');
+          const leaderSub = document.getElementById('teaching-subpanel-leadership');
+          let subtabId = 'ta';
+          if (mentorSub && mentorSub.querySelector(`#${cardId}`)) subtabId = 'mentorship';
+          else if (leaderSub && leaderSub.querySelector(`#${cardId}`)) subtabId = 'leadership';
+
+          window.dispatchEvent(new CustomEvent('switch-teaching-subtab', { detail: { subtabId } }));
+        } else if (educationPanel && educationPanel.querySelector(`#${cardId}`)) {
+          targetSection = 'education';
+          const awardsSub = document.getElementById('education-subpanel-awards');
+          let subtabId = 'degrees';
+          if (awardsSub && awardsSub.querySelector(`#${cardId}`)) subtabId = 'awards';
+
+          window.dispatchEvent(new CustomEvent('switch-education-subtab', { detail: { subtabId } }));
+        } else if (skillsPanel && skillsPanel.querySelector(`#${cardId}`)) {
+          targetSection = 'skills';
+        } else if (workPanel && workPanel.querySelector(`#${cardId}`)) {
+          targetSection = 'work-experience';
+        }
+
+        activateSection(targetSection, false);
+
+        // Smooth scroll directly to the card after layout unhides
+        setTimeout(() => {
+          const cardEl = document.getElementById(cardId);
+          if (cardEl) {
+            cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            cardEl.classList.add('ring-2', 'ring-emerald-500/70', 'dark:ring-emerald-400/70', 'shadow-lg');
+            setTimeout(() => {
+              cardEl.classList.remove('ring-2', 'ring-emerald-500/70', 'dark:ring-emerald-400/70', 'shadow-lg');
+            }, 2000);
+          }
+        }, 120);
+        return;
+      }
+
+      // 2. Pure section hash: e.g. 'teaching', 'work-experience'
+      let section = rawHash;
+      if (section === 'experience') section = 'work-experience';
+      if (validTabs.includes(section)) {
+        activateSection(section, false);
+        if (section !== 'about' && hub) {
+          setTimeout(() => {
+            hub.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 80);
+        }
+      } else {
+        activateSection('about', false);
+      }
+    }
+
+    handleInitialOrChangedHash();
+
+    // Listen to hash changes (back/forward navigation)
+    window.addEventListener('hashchange', handleInitialOrChangedHash);
+  }
+
+  setupNumberedMenu();
+  document.addEventListener('astro:after-swap', setupNumberedMenu);
+</script>

@@ -1,0 +1,106 @@
+---
+// src/components/hub/BibtexModal.astro
+---
+
+<!-- Global BibTeX Modal -->
+<div
+  id="bibtex-modal"
+  class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-opacity"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="bibtex-modal-title"
+>
+  <div class="relative w-full max-w-xl bg-white dark:bg-[#141721] rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-2xl p-6 overflow-hidden">
+    <!-- Header -->
+    <div class="flex items-center justify-between pb-4 border-b border-zinc-200 dark:border-zinc-800">
+      <div class="flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+        <h3 id="bibtex-modal-title" class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 font-mono">
+          BibTeX Citation
+        </h3>
+      </div>
+      <button
+        id="bibtex-modal-close"
+        type="button"
+        class="text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 p-1 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+        aria-label="Close modal"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Code Block -->
+    <div class="mt-4 relative">
+      <pre id="bibtex-modal-content" class="p-4 rounded-xl bg-zinc-900 dark:bg-black/70 text-zinc-100 text-xs font-mono overflow-x-auto selection:bg-indigo-600/50 leading-relaxed"></pre>
+      
+      <button
+        id="bibtex-modal-copy"
+        type="button"
+        class="absolute top-2.5 right-2.5 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700/80 shadow-sm transition-all focus:outline-none"
+      >
+        <svg id="copy-icon" xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
+          <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
+        </svg>
+        <span id="copy-text">Copy</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function setupBibtexModal() {
+    const modal = document.getElementById('bibtex-modal');
+    const closeBtn = document.getElementById('bibtex-modal-close');
+    const contentPre = document.getElementById('bibtex-modal-content');
+    const copyBtn = document.getElementById('bibtex-modal-copy');
+    const copyText = document.getElementById('copy-text');
+    if (!modal || !closeBtn || !contentPre || !copyBtn || !copyText) return;
+
+    let currentBibtex = '';
+
+    function closeModal() {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+        closeModal();
+      }
+    });
+
+    copyBtn.addEventListener('click', async () => {
+      if (!currentBibtex) return;
+      try {
+        await navigator.clipboard.writeText(currentBibtex);
+        copyText.textContent = 'Copied!';
+        setTimeout(() => {
+          copyText.textContent = 'Copy';
+        }, 2000);
+      } catch (err) {
+        console.error('Failed to copy BibTeX', err);
+      }
+    });
+
+    // Listen to global open event
+    document.addEventListener('open-bibtex', ((e: CustomEvent<{ bibtex: string }>) => {
+      currentBibtex = e.detail.bibtex;
+      contentPre.textContent = currentBibtex;
+      copyText.textContent = 'Copy';
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }) as EventListener);
+  }
+
+  setupBibtexModal();
+  document.addEventListener('astro:after-swap', setupBibtexModal);
+</script>
