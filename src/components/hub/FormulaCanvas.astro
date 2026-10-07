@@ -1,0 +1,405 @@
+---
+// src/components/hub/FormulaCanvas.astro
+---
+
+<div
+  id="formula-canvas-wrapper"
+  class="absolute inset-0 w-full h-full overflow-hidden pointer-events-none select-none z-0"
+>
+  <canvas id="formula-canvas" class="w-full h-full block"></canvas>
+</div>
+
+<script>
+  interface FormulaSegment {
+    text: string;
+    type: "normal" | "sup" | "sub";
+  }
+
+  interface MeasuredSegment {
+    text: string;
+    type: "normal" | "sup" | "sub";
+    width: number;
+  }
+
+  interface Particle {
+    rawFormula: string;
+    parsed: FormulaSegment[];
+    segments: MeasuredSegment[];
+    x: number;
+    y: number;
+    vx: number;
+    vy: number;
+    baseOpacity: number;
+    currentOpacity: number;
+    fontSize: number;
+    width: number;
+    height: number;
+    isEnergized: boolean;
+  }
+
+  function parseFormula(raw: string): FormulaSegment[] {
+    const segments: FormulaSegment[] = [];
+    let i = 0;
+    let currentNormal = "";
+
+    function flushNormal() {
+      if (currentNormal) {
+        segments.push({ text: currentNormal, type: "normal" });
+        currentNormal = "";
+      }
+    }
+
+    while (i < raw.length) {
+      const char = raw[i];
+      if (char === "^" || char === "_") {
+        flushNormal();
+        const type: "sup" | "sub" = char === "^" ? "sup" : "sub";
+        i++;
+        if (i < raw.length) {
+          if (raw[i] === "{") {
+            i++;
+            let content = "";
+            while (i < raw.length && raw[i] !== "}") {
+              content += raw[i];
+              i++;
+            }
+            if (i < raw.length && raw[i] === "}") {
+              i++;
+            }
+            if (content) {
+              segments.push({ text: content, type });
+            }
+          } else {
+            segments.push({ text: raw[i], type });
+            i++;
+          }
+        }
+      } else {
+        currentNormal += char;
+        i++;
+      }
+    }
+    flushNormal();
+    return segments;
+  }
+
+  function measureSegments(
+    ctx: CanvasRenderingContext2D,
+    parsed: FormulaSegment[],
+    fontSize: number,
+  ): { segments: MeasuredSegment[]; totalWidth: number } {
+    const normalFont = `600 ${fontSize}px "JetBrains Mono", monospace`;
+    const scriptSize = Math.max(8, Math.round(fontSize * 0.72));
+    const scriptFont = `600 ${scriptSize}px "JetBrains Mono", monospace`;
+
+    let totalWidth = 0;
+    const segments: MeasuredSegment[] = [];
+
+    for (let s = 0; s < parsed.length; s++) {
+      const seg = parsed[s];
+      ctx.font = seg.type === "normal" ? normalFont : scriptFont;
+      const width = ctx.measureText(seg.text).width;
+      segments.push({
+        text: seg.text,
+        type: seg.type,
+        width,
+      });
+      totalWidth += width;
+    }
+
+    return { segments, totalWidth };
+  }
+
+  function drawFormula(
+    ctx: CanvasRenderingContext2D,
+    segments: MeasuredSegment[],
+    x: number,
+    y: number,
+    fontSize: number,
+    color: string,
+    opacity: number,
+  ) {
+    const normalFont = `600 ${fontSize}px "JetBrains Mono", monospace`;
+    const scriptSize = Math.max(8, Math.round(fontSize * 0.72));
+    const scriptFont = `600 ${scriptSize}px "JetBrains Mono", monospace`;
+
+    ctx.fillStyle = `rgba(${color}, ${opacity})`;
+
+    let curX = x;
+    for (let s = 0; s < segments.length; s++) {
+      const seg = segments[s];
+      if (seg.type === "normal") {
+        ctx.font = normalFont;
+        ctx.fillText(seg.text, curX, y);
+      } else if (seg.type === "sup") {
+        ctx.font = scriptFont;
+        // Elevate powers / superscripts above baseline
+        const supY = y - fontSize * 0.4;
+        ctx.fillText(seg.text, curX, supY);
+      } else if (seg.type === "sub") {
+        ctx.font = scriptFont;
+        // Lower subscripts below baseline
+        const subY = y + fontSize * 0.22;
+        ctx.fillText(seg.text, curX, subY);
+      }
+      curX += seg.width;
+    }
+  }
+
+  function setupFormulaCanvas() {
+    const wrapper = document.getElementById("formula-canvas-wrapper");
+    const canvas = document.getElementById(
+      "formula-canvas",
+    ) as HTMLCanvasElement | null;
+    if (!wrapper || !canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const formulas = [
+      "V^*(s) = max_a [R(s,a) + γ ∑ P(s'|s,a) V^*(s')]",
+      "∇_θ J(θ) = E_π [∇_θ log π_θ(a|s) Q^π(s,a)]",
+      "L_{CLIP}(θ) = E [min(r_t A_t, clip(r_t, 1±ε) A_t)]",
+      "Attention(Q,K,V) = softmax(QK^T / √d_k)V",
+      "δ_t = R_{t+1} + γ V(S_{t+1}) - V(S_t)",
+      "L_{CE} = -∑ y_i log(ŷ_i)",
+      "θ_{t+1} = θ_t - η ∇_θ L(θ)",
+      "Q(s,a) ← Q(s,a) + α [r + γ max_{a'} Q(s',a') - Q(s,a)]",
+      "p(θ|D) = p(D|θ) p(θ) / p(D)",
+      "D_{KL}(π_{old} || π) ≤ δ",
+      "A^{GAE} = ∑ (γλ)^l δ_{t+l}",
+      "σ(z) = 1 / (1 + e^{-z})",
+      "E_{τ~π} [∑ γ^t R(s_t, a_t)]",
+      "argmax_a Q^*(s, a)",
+    ];
+
+    let width = 0;
+    let height = 0;
+    let dpr = 1;
+    let particles: Particle[] = [];
+    let mouse = { x: -9999, y: -9999, active: false };
+    let animId: number;
+
+    function resize() {
+      if (!wrapper || !canvas || !ctx) return;
+      const rect = wrapper.getBoundingClientRect();
+      width = rect.width;
+      height = rect.height;
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      ctx.scale(dpr, dpr);
+
+      if (particles.length === 0 && width > 0 && height > 0) {
+        initParticles();
+      } else if (particles.length > 0) {
+        const newFontSize = width < 640 ? 11 : 13;
+        for (const p of particles) {
+          p.fontSize = newFontSize;
+          const measured = measureSegments(ctx, p.parsed, newFontSize);
+          p.segments = measured.segments;
+          p.width = measured.totalWidth;
+          p.height = newFontSize * 1.8;
+        }
+      }
+    }
+
+    function initParticles() {
+      if (!ctx) return;
+      particles = [];
+      const count = width < 640 ? 10 : width < 1100 ? 16 : 24;
+
+      for (let i = 0; i < count; i++) {
+        const rawFormula = formulas[i % formulas.length];
+        const parsed = parseFormula(rawFormula);
+        const fontSize = width < 640 ? 11 : 13;
+
+        const measured = measureSegments(ctx, parsed, fontSize);
+        const pWidth = measured.totalWidth;
+        const pHeight = fontSize * 1.8;
+
+        const x = Math.random() * Math.max(20, width - pWidth - 30) + 15;
+        const y =
+          Math.random() * Math.max(20, height - pHeight - 30) + pHeight + 10;
+
+        const speed = 0.3 + Math.random() * 0.3;
+        const angle = Math.random() * Math.PI * 2;
+
+        particles.push({
+          rawFormula,
+          parsed,
+          segments: measured.segments,
+          x,
+          y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          baseOpacity: 0.12 + Math.random() * 0.05,
+          currentOpacity: 0.12,
+          fontSize,
+          width: pWidth,
+          height: pHeight,
+          isEnergized: false,
+        });
+      }
+    }
+
+    // Direct window-level pointer tracking for zero latency
+    function handlePointerMove(e: PointerEvent) {
+      if (!wrapper) return;
+      const rect = wrapper.getBoundingClientRect();
+      // Only track if roughly within or near the hero area
+      if (
+        e.clientY >= rect.top - 50 &&
+        e.clientY <= rect.bottom + 50 &&
+        e.clientX >= rect.left - 50 &&
+        e.clientX <= rect.right + 50
+      ) {
+        mouse.x = e.clientX - rect.left;
+        mouse.y = e.clientY - rect.top;
+        mouse.active = true;
+      } else {
+        mouse.active = false;
+        mouse.x = -9999;
+        mouse.y = -9999;
+      }
+    }
+
+    function handlePointerLeave() {
+      mouse.active = false;
+      mouse.x = -9999;
+      mouse.y = -9999;
+    }
+
+    window.addEventListener("pointermove", handlePointerMove, {
+      passive: true,
+    });
+    document.addEventListener("mouseleave", handlePointerLeave);
+
+    function render() {
+      if (!ctx) return;
+      ctx.clearRect(0, 0, width, height);
+
+      const isDark = document.documentElement.classList.contains("dark");
+      const baseColor = isDark ? "226, 232, 240" : "30, 41, 59";
+      const highlightColor = isDark ? "59, 130, 246" : "37, 99, 235"; // Vibrant Cobalt
+
+      const radius = 135; // Immediate interaction radius
+
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+
+        // Particle center
+        const cx = p.x + p.width / 2;
+        const cy = p.y - p.height / 2;
+
+        if (mouse.active) {
+          const dx = cx - mouse.x;
+          const dy = cy - mouse.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < radius && dist > 1) {
+            // Immediate deflection & repulsion every frame
+            const force = (1 - dist / radius) * 3.8;
+            const nx = dx / dist;
+            const ny = dy / dist;
+
+            p.vx += nx * force;
+            p.vy += ny * force;
+
+            // Immediate kinetic recoil displacement
+            p.x += nx * force * 0.9;
+            p.y += ny * force * 0.9;
+
+            p.currentOpacity = 0.55;
+            p.isEnergized = true;
+          } else {
+            p.isEnergized = false;
+          }
+        } else {
+          p.isEnergized = false;
+        }
+
+        // Velocity damping back to natural ambient drift
+        const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+        if (speed > 0.6) {
+          p.vx *= 0.93;
+          p.vy *= 0.93;
+        } else if (speed < 0.2) {
+          p.vx *= 1.05;
+          p.vy *= 1.05;
+        }
+
+        // Fade opacity back smoothly
+        if (!p.isEnergized) {
+          p.currentOpacity += (p.baseOpacity - p.currentOpacity) * 0.08;
+        }
+
+        // Advance position
+        p.x += p.vx;
+        p.y += p.vy;
+
+        // Clean edge bounce
+        if (p.x < 10) {
+          p.x = 10;
+          p.vx = Math.abs(p.vx) * 0.85;
+        } else if (p.x + p.width > width - 10) {
+          p.x = width - p.width - 10;
+          p.vx = -Math.abs(p.vx) * 0.85;
+        }
+
+        if (p.y - p.height < 10) {
+          p.y = p.height + 10;
+          p.vy = Math.abs(p.vy) * 0.85;
+        } else if (p.y > height - 10) {
+          p.y = height - 10;
+          p.vy = -Math.abs(p.vy) * 0.85;
+        }
+
+        // Render rich math formula with LaTeX-style superscripts and subscripts
+        const color = p.isEnergized ? highlightColor : baseColor;
+        drawFormula(
+          ctx,
+          p.segments,
+          p.x,
+          p.y,
+          p.fontSize,
+          color,
+          p.currentOpacity,
+        );
+      }
+
+      animId = requestAnimationFrame(render);
+    }
+
+    const observer = new ResizeObserver(() => {
+      resize();
+    });
+    observer.observe(wrapper);
+
+    // If fonts load asynchronously, re-measure segments to ensure perfect spacing
+    if (document.fonts) {
+      document.fonts.ready.then(() => {
+        if (!ctx) return;
+        for (const p of particles) {
+          const measured = measureSegments(ctx, p.parsed, p.fontSize);
+          p.segments = measured.segments;
+          p.width = measured.totalWidth;
+        }
+      });
+    }
+
+    resize();
+    render();
+
+    return () => {
+      cancelAnimationFrame(animId);
+      observer.disconnect();
+      window.removeEventListener("pointermove", handlePointerMove);
+      document.removeEventListener("mouseleave", handlePointerLeave);
+    };
+  }
+
+  setupFormulaCanvas();
+  document.addEventListener("astro:after-swap", setupFormulaCanvas);
+</script>

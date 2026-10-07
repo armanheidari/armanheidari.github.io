@@ -1,0 +1,119 @@
+---
+// src/components/hub/WorkExperiencePanel.astro
+import { workExperiences } from '../../data/experience';
+---
+
+<div class="space-y-6">
+  <!-- Section Title & Header -->
+  <div class="flex items-center justify-between pb-2">
+    <div>
+      <h2 class="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white tracking-tight">
+        05 - Work Experience
+      </h2>
+      <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+        Production machine learning engineering, deep generative modeling, and autonomous multi-agent systems.
+      </p>
+    </div>
+    <span class="text-xs font-mono px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60">
+      {workExperiences.length} {workExperiences.length === 1 ? 'Role' : 'Roles'}
+    </span>
+  </div>
+
+  <!-- Work Experience Cards Grid -->
+  <div class="space-y-4">
+    {workExperiences.map((exp) => (
+      <article
+        id={`card-${exp.slug}`}
+        class="group relative p-6 sm:p-7 rounded-2xl bg-white dark:bg-[#12151e] border border-zinc-200/80 dark:border-zinc-800 shadow-sm hover:border-blue-500/50 dark:hover:border-blue-500/40 hover:shadow-md transition-all duration-200 flex flex-col justify-between space-y-5 cursor-pointer scroll-mt-24"
+      >
+        <!-- Stretched clickable overlay for whole card -->
+        <a href={`/experience/${exp.slug}`} class="absolute inset-0 z-0 rounded-2xl" aria-hidden="true" tabindex="-1"></a>
+
+        <div class="relative z-10 space-y-4 pointer-events-none">
+          <!-- Top Row: Role, Company, Period -->
+          <div class="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <div class="flex items-center gap-2.5">
+                <a
+                  href={`/experience/${exp.slug}`}
+                  class="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors inline-flex items-center gap-1.5 pointer-events-auto"
+                >
+                  <span>{exp.role}</span>
+                  <svg class="w-4 h-4 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-blue-600 dark:text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14"></path>
+                    <path d="m12 5 7 7-7 7"></path>
+                  </svg>
+                </a>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60 pointer-events-auto">
+                  Engineering
+                </span>
+              </div>
+              <p class="text-sm font-semibold text-zinc-700 dark:text-zinc-300 mt-0.5">
+                {exp.company} <span class="text-zinc-400 font-normal">• {exp.location}</span>
+              </p>
+            </div>
+
+            <span class="text-xs font-mono font-medium text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800/80 px-3 py-1 rounded-lg border border-zinc-200/60 dark:border-zinc-700/60 shrink-0 pointer-events-auto">
+              {exp.period}
+            </span>
+          </div>
+
+          <!-- Headline / Short Summary -->
+          <p class="text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
+            {exp.shortSummary}
+          </p>
+
+          <!-- Core System Highlights Pills -->
+          <div class="space-y-2 pt-1">
+            <span class="text-[11px] font-mono uppercase tracking-wider font-semibold text-zinc-400 dark:text-zinc-500">
+              Major Systems Architected
+            </span>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              {exp.projects.map((proj, idx) => (
+                <div class="p-3 rounded-xl bg-zinc-50/70 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/60 space-y-1">
+                  <div class="flex items-center gap-1.5 text-xs font-semibold text-zinc-900 dark:text-zinc-100">
+                    <span class="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0"></span>
+                    <span class="truncate">{proj.title}</span>
+                  </div>
+                  <p class="text-[11px] text-zinc-500 dark:text-zinc-400 line-clamp-2 leading-relaxed">
+                    {proj.subtitle}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Action Row: Tech Stack & Dedicated Page Link -->
+        <div class="relative z-10 pt-4 border-t border-zinc-100 dark:border-zinc-800/80 flex flex-wrap items-center justify-between gap-4">
+          <!-- Tech Stack -->
+          <div class="flex flex-wrap items-center gap-1.5">
+            {exp.skills.slice(0, 6).map((skill) => (
+              <span class="text-[11px] font-mono px-2.5 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
+                {skill}
+              </span>
+            ))}
+            {exp.skills.length > 6 && (
+              <span class="text-[11px] font-mono text-zinc-400">
+                +{exp.skills.length - 6} more
+              </span>
+            )}
+          </div>
+
+          <!-- CTA to Dedicated Experience Page -->
+          <a
+            href={`/experience/${exp.slug}`}
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white transition-all shadow-sm shadow-blue-500/20 group-hover:scale-[1.02] active:scale-[0.98]"
+            aria-label={`View full details of ${exp.role} at ${exp.company}`}
+          >
+            <span>Explore Architecture & Deep Dive</span>
+            <svg class="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14"></path>
+              <path d="m12 5 7 7-7 7"></path>
+            </svg>
+          </a>
+        </div>
+      </article>
+    ))}
+  </div>
+</div>

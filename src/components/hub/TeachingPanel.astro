@@ -1,0 +1,291 @@
+---
+// src/components/hub/TeachingPanel.astro
+import {
+  teachingItems,
+  getTeachingItemsByCategory
+} from '../../data/teaching';
+
+const taItems = getTeachingItemsByCategory('teaching');
+const mentorshipItems = getTeachingItemsByCategory('mentorship');
+const leadershipItems = getTeachingItemsByCategory('leadership');
+
+const subtabs = [
+  { id: 'ta', label: 'Teaching Assistantships', shortLabel: 'Teaching', count: taItems.length },
+  { id: 'mentorship', label: 'Mentorship & Consulting', shortLabel: 'Mentorship', count: mentorshipItems.length },
+  { id: 'leadership', label: 'Academic Leadership', shortLabel: 'Leadership', count: leadershipItems.length }
+];
+---
+
+<div class="space-y-6">
+  <!-- Section Title & Header -->
+  <div class="flex flex-wrap items-center justify-between gap-3 pb-2">
+    <div>
+      <h2 class="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white tracking-tight">
+        03 - Teaching, Mentorship & Leadership
+      </h2>
+      <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+        Academic teaching appointments, nationwide competitive exam consulting, and departmental leadership.
+      </p>
+    </div>
+    <span class="text-xs font-mono px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/60 font-medium">
+      {teachingItems.length} Appointments
+    </span>
+  </div>
+
+  <!-- Interactive Subtabs Ribbon -->
+  <div class="flex items-center gap-1.5 p-1 rounded-2xl bg-zinc-100/90 dark:bg-zinc-900/90 border border-zinc-200/70 dark:border-zinc-800/70 overflow-x-auto scrollbar-none">
+    {subtabs.map((tab, idx) => (
+      <button
+        type="button"
+        data-teaching-subtab={tab.id}
+        class:list={[
+          "teaching-subtab-btn flex-1 min-w-[120px] sm:min-w-0 inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-150 cursor-pointer select-none",
+          idx === 0
+            ? "active bg-white dark:bg-[#12151e] text-zinc-900 dark:text-white shadow-xs border border-zinc-200/60 dark:border-zinc-700/60"
+            : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-white/40 dark:hover:bg-zinc-800/40"
+        ]}
+      >
+        <span class="hidden sm:inline">{tab.label}</span>
+        <span class="sm:hidden">{tab.shortLabel}</span>
+        <span class="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-zinc-200/70 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300">
+          {tab.count}
+        </span>
+      </button>
+    ))}
+  </div>
+
+  <!-- Subtab 1: Teaching Assistantships (Decluttered, compact cards) -->
+  <div id="teaching-subpanel-ta" class="teaching-subpanel space-y-3">
+    <div class="grid grid-cols-1 gap-3">
+      {taItems.map((item) => (
+        <article
+          id={`card-${item.slug}`}
+          class="group relative p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#12151e] border border-zinc-200/80 dark:border-zinc-800 shadow-xs hover:border-emerald-500/50 dark:hover:border-emerald-500/40 hover:shadow-md transition-all duration-150 flex items-center justify-between gap-4 cursor-pointer scroll-mt-24"
+        >
+          <!-- Stretched link for full card clickability -->
+          <a href={`/teaching/${item.slug}`} class="absolute inset-0 z-0 rounded-2xl" aria-hidden="true" tabindex="-1"></a>
+
+          <div class="relative z-10 space-y-1.5 min-w-0 flex-1 pointer-events-none">
+            <!-- Top: Title and Role Badge -->
+            <div class="flex flex-wrap items-center gap-2">
+              <a
+                href={`/teaching/${item.slug}`}
+                class="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors pointer-events-auto"
+              >
+                {item.title}
+              </a>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/60">
+                {item.badge}
+              </span>
+            </div>
+
+            <!-- Instructor, Department, University -->
+            <div class="text-xs text-zinc-600 dark:text-zinc-400 font-medium flex flex-wrap items-center gap-x-2 gap-y-0.5">
+              {item.instructor && (
+                <span>
+                  Prof: <span class="text-zinc-800 dark:text-zinc-200 font-semibold">{item.instructor}</span>
+                </span>
+              )}
+              {item.instructor && <span class="text-zinc-300 dark:text-zinc-700">•</span>}
+              <span>{item.department}</span>
+              <span class="text-zinc-300 dark:text-zinc-700">•</span>
+              <span class="text-zinc-500 dark:text-zinc-400">{item.institution}</span>
+            </div>
+          </div>
+
+          <!-- Right side: Period badge & arrow -->
+          <div class="relative z-10 flex items-center gap-3 shrink-0 pointer-events-none">
+            <span class="text-xs font-mono font-medium text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800/80 px-2.5 py-1 rounded-lg border border-zinc-200/60 dark:border-zinc-700/60">
+              {item.period}
+            </span>
+
+            <div class="w-8 h-8 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/60 dark:border-zinc-800/60 group-hover:bg-emerald-50 dark:group-hover:bg-emerald-950/40 group-hover:border-emerald-200 dark:group-hover:border-emerald-800 flex items-center justify-center transition-colors">
+              <svg class="w-4 h-4 text-zinc-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-transform group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14"></path>
+                <path d="m12 5 7 7-7 7"></path>
+              </svg>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+
+  <!-- Subtab 2: Mentorship & Consulting (Decluttered, compact cards) -->
+  <div id="teaching-subpanel-mentorship" class="teaching-subpanel hidden space-y-3">
+    <div class="grid grid-cols-1 gap-3">
+      {mentorshipItems.map((item) => (
+        <article
+          id={`card-${item.slug}`}
+          class="group relative p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#12151e] border border-zinc-200/80 dark:border-zinc-800 shadow-xs hover:border-blue-500/50 dark:hover:border-blue-500/40 hover:shadow-md transition-all duration-150 flex items-center justify-between gap-4 cursor-pointer scroll-mt-24"
+        >
+          <!-- Stretched link for full card clickability -->
+          <a href={`/teaching/${item.slug}`} class="absolute inset-0 z-0 rounded-2xl" aria-hidden="true" tabindex="-1"></a>
+
+          <div class="relative z-10 space-y-1.5 min-w-0 flex-1 pointer-events-none">
+            <!-- Title and Role Badge -->
+            <div class="flex flex-wrap items-center gap-2">
+              <a
+                href={`/teaching/${item.slug}`}
+                class="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors pointer-events-auto"
+              >
+                {item.title}
+              </a>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60">
+                {item.badge}
+              </span>
+            </div>
+
+            <!-- Role, Department, Institution -->
+            <div class="text-xs text-zinc-600 dark:text-zinc-400 font-medium flex flex-wrap items-center gap-x-2 gap-y-0.5">
+              <span class="text-zinc-800 dark:text-zinc-200 font-semibold">{item.role}</span>
+              {item.department && (
+                <>
+                  <span class="text-zinc-300 dark:text-zinc-700">•</span>
+                  <span>{item.department}</span>
+                </>
+              )}
+              <span class="text-zinc-300 dark:text-zinc-700">•</span>
+              <span class="text-zinc-500 dark:text-zinc-400">{item.institution}</span>
+            </div>
+          </div>
+
+          <!-- Right side: Actions & Period -->
+          <div class="relative z-10 flex items-center gap-2.5 shrink-0">
+            <span class="text-xs font-mono font-medium text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800/80 px-2.5 py-1 rounded-lg border border-zinc-200/60 dark:border-zinc-700/60 pointer-events-none">
+              {item.period}
+            </span>
+
+            {item.externalUrl && (
+              <a
+                href={item.externalUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/50 dark:hover:bg-blue-900/60 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60 transition-colors pointer-events-auto"
+                aria-label="View verified external profile"
+              >
+                <span>Portal</span>
+                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+              </a>
+            )}
+
+            <div class="w-8 h-8 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/60 dark:border-zinc-800/60 group-hover:bg-blue-50 dark:group-hover:bg-blue-950/40 group-hover:border-blue-200 dark:group-hover:border-blue-800 flex items-center justify-center transition-colors pointer-events-none">
+              <svg class="w-4 h-4 text-zinc-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-transform group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14"></path>
+                <path d="m12 5 7 7-7 7"></path>
+              </svg>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+
+  <!-- Subtab 3: Academic Leadership (Decluttered, compact card) -->
+  <div id="teaching-subpanel-leadership" class="teaching-subpanel hidden space-y-3">
+    <div class="grid grid-cols-1 gap-3">
+      {leadershipItems.map((item) => (
+        <article
+          id={`card-${item.slug}`}
+          class="group relative p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#12151e] border border-zinc-200/80 dark:border-zinc-800 shadow-xs hover:border-purple-500/50 dark:hover:border-purple-500/40 hover:shadow-md transition-all duration-150 flex items-center justify-between gap-4 cursor-pointer scroll-mt-24"
+        >
+          <!-- Stretched link for full card clickability -->
+          <a href={`/teaching/${item.slug}`} class="absolute inset-0 z-0 rounded-2xl" aria-hidden="true" tabindex="-1"></a>
+
+          <div class="relative z-10 space-y-1.5 min-w-0 flex-1 pointer-events-none">
+            <!-- Title and Badge -->
+            <div class="flex flex-wrap items-center gap-2">
+              <a
+                href={`/teaching/${item.slug}`}
+                class="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors pointer-events-auto"
+              >
+                {item.title}
+              </a>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200/60 dark:border-purple-800/60">
+                {item.badge}
+              </span>
+            </div>
+
+            <!-- Role, Department, Institution -->
+            <div class="text-xs text-zinc-600 dark:text-zinc-400 font-medium flex flex-wrap items-center gap-x-2 gap-y-0.5">
+              <span class="text-zinc-800 dark:text-zinc-200 font-semibold">{item.role}</span>
+              {item.department && (
+                <>
+                  <span class="text-zinc-300 dark:text-zinc-700">•</span>
+                  <span>{item.department}</span>
+                </>
+              )}
+              <span class="text-zinc-300 dark:text-zinc-700">•</span>
+              <span class="text-zinc-500 dark:text-zinc-400">{item.institution}</span>
+            </div>
+          </div>
+
+          <!-- Right side: Period badge & arrow -->
+          <div class="relative z-10 flex items-center gap-3 shrink-0 pointer-events-none">
+            <span class="text-xs font-mono font-medium text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800/80 px-2.5 py-1 rounded-lg border border-zinc-200/60 dark:border-zinc-700/60">
+              {item.period}
+            </span>
+
+            <div class="w-8 h-8 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/60 dark:border-zinc-800/60 group-hover:bg-purple-50 dark:group-hover:bg-purple-950/40 group-hover:border-purple-200 dark:group-hover:border-purple-800 flex items-center justify-center transition-colors">
+              <svg class="w-4 h-4 text-zinc-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-transform group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14"></path>
+                <path d="m12 5 7 7-7 7"></path>
+              </svg>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</div>
+
+<script>
+  function setupTeachingSubtabs() {
+    const buttons = document.querySelectorAll<HTMLButtonElement>('[data-teaching-subtab]');
+    const panels = document.querySelectorAll<HTMLElement>('.teaching-subpanel');
+
+    function switchSubtab(targetId: string) {
+      if (!targetId) return;
+
+      buttons.forEach((b) => {
+        const isActive = b.getAttribute('data-teaching-subtab') === targetId;
+        if (isActive) {
+          b.classList.add('active', 'bg-white', 'dark:bg-[#12151e]', 'text-zinc-900', 'dark:text-white', 'shadow-xs', 'border', 'border-zinc-200/60', 'dark:border-zinc-700/60');
+          b.classList.remove('text-zinc-500', 'dark:text-zinc-400');
+        } else {
+          b.classList.remove('active', 'bg-white', 'dark:bg-[#12151e]', 'text-zinc-900', 'dark:text-white', 'shadow-xs', 'border', 'border-zinc-200/60', 'dark:border-zinc-700/60');
+          b.classList.add('text-zinc-500', 'dark:text-zinc-400');
+        }
+      });
+
+      panels.forEach((panel) => {
+        if (panel.id === `teaching-subpanel-${targetId}`) {
+          panel.classList.remove('hidden');
+        } else {
+          panel.classList.add('hidden');
+        }
+      });
+    }
+
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.getAttribute('data-teaching-subtab');
+        if (targetId) switchSubtab(targetId);
+      });
+    });
+
+    window.addEventListener('switch-teaching-subtab', (e: Event) => {
+      const customEvent = e as CustomEvent<{ subtabId: string }>;
+      if (customEvent.detail?.subtabId) {
+        switchSubtab(customEvent.detail.subtabId);
+      }
+    });
+  }
+
+  setupTeachingSubtabs();
+  document.addEventListener('astro:after-swap', setupTeachingSubtabs);
+</script>

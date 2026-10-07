@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4f46e5" />
+      <stop offset="50%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#06b6d4" />
+    </linearGradient>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#312e81" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9" />
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="240" height="240" rx="120" fill="url(#glow)" />
+  
+  <!-- Subtle circular grid -->
+  <circle cx="120" cy="120" r="100" stroke="#6366f1" stroke-opacity="0.2" stroke-width="1.5" fill="none" />
+  <circle cx="120" cy="120" r="75" stroke="#38bdf8" stroke-opacity="0.25" stroke-width="1" stroke-dasharray="4 4" fill="none" />
+  
+  <!-- Monogram AH -->
+  <text x="120" y="145" font-family="'Newsreader', 'Inter', -apple-system, sans-serif" font-size="78" font-weight="700" fill="url(#grad)" text-anchor="middle" letter-spacing="-2">AH</text>
+  
+  <!-- Subtle orbital point -->
+  <circle cx="178" cy="72" r="5" fill="#38bdf8" />
+  <circle cx="178" cy="72" r="9" stroke="#38bdf8" stroke-opacity="0.4" stroke-width="1.5" fill="none" />
+</svg>

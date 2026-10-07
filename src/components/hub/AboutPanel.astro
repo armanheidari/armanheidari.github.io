@@ -1,0 +1,322 @@
+---
+// src/components/hub/AboutPanel.astro
+import { profile } from "../../data/profile";
+
+const aboutSubtabs = [
+  { id: "professional", label: "Professional & Research", shortLabel: "Research" },
+  { id: "personal", label: "Life & Curiosities", shortLabel: "Life" }
+];
+
+const thingsIEnjoy = [
+  "Books",
+  "Films & TV",
+  "History",
+  "Philosophy",
+  "Psychology",
+  "Technology & Tinkering",
+  "Fitness",
+  "Music",
+  "Long conversations",
+  "Learning random things"
+];
+---
+
+<div class="space-y-6">
+  <!-- Section Title & Header -->
+  <div class="flex flex-wrap items-center justify-between gap-3 pb-2">
+    <div>
+      <h2 class="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white tracking-tight">
+        01 - About Me
+      </h2>
+      <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+        Intellectual trajectory, engineering philosophy, and personal curiosities beyond the screen.
+      </p>
+    </div>
+  </div>
+
+  <!-- Interactive Subtabs Ribbon -->
+  <div class="flex items-center gap-1.5 p-1 rounded-2xl bg-zinc-100/90 dark:bg-zinc-900/90 border border-zinc-200/70 dark:border-zinc-800/70 overflow-x-auto scrollbar-none">
+    {aboutSubtabs.map((tab, idx) => (
+      <button
+        type="button"
+        data-about-subtab={tab.id}
+        class:list={[
+          "about-subtab-btn flex-1 min-w-[140px] sm:min-w-0 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all duration-150 cursor-pointer select-none",
+          idx === 0
+            ? "active bg-white dark:bg-[#12151e] text-zinc-900 dark:text-white shadow-xs border border-zinc-200/60 dark:border-zinc-700/60"
+            : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-white/40 dark:hover:bg-zinc-800/40"
+        ]}
+      >
+        <span class="hidden sm:inline">{tab.label}</span>
+        <span class="sm:hidden">{tab.shortLabel}</span>
+      </button>
+    ))}
+  </div>
+
+  <!-- Subsection 1: Professional & Research -->
+  <div id="about-subpanel-professional" class="about-subpanel space-y-6">
+    <div class="p-6 sm:p-7 rounded-3xl bg-white dark:bg-[#12151e] border border-zinc-200/80 dark:border-zinc-800 shadow-xs space-y-4">
+      <div class="space-y-1">
+        <span class="text-xs font-mono font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+          The Intellectual Journey
+        </span>
+        <h3 class="text-lg sm:text-xl font-bold text-zinc-900 dark:text-white">
+          From First-Principles Engineering to Autonomous Agency
+        </h3>
+      </div>
+
+      <div class="text-sm sm:text-base leading-relaxed text-zinc-700 dark:text-zinc-300 space-y-3.5">
+        <p>
+          My interest in computing started with a simple obsession: understanding how complex systems function from the ground up—how lines of code translate into mathematical transformations and predictable physical behavior. During my undergraduate training in Computer Engineering, I spent years immersed in algorithms, discrete mathematics, and systems programming, developing an enduring respect for first-principles thinking and clean implementation.
+        </p>
+        <p>
+          Over time, that curiosity naturally drew me toward Artificial Intelligence. What fascinates me most about Machine Learning and Deep Learning is the shift from writing handcrafted, explicit rules to designing architectures that can discover representations directly from data. I find immense satisfaction in bridging theoretical intuition—linear algebra, probability, and optimization dynamics—with concrete, functional code.
+        </p>
+        <p>
+          To me, <strong class="text-zinc-900 dark:text-white font-semibold">Reinforcement Learning</strong> represents the ultimate frontier—the <em>"final boss"</em> of AI. The idea of an agent that doesn't merely classify static inputs, but actively explores an environment, learns through trial and error, and formulates strategies over time is deeply compelling. While I am still early in this pursuit and building up the foundational machinery, mastering decision-making under uncertainty and autonomous learning is the summit I'm working toward in my graduate studies at Sharif.
+        </p>
+        <p>
+          Whether working on machine learning pipelines or studying theory, I prefer substance over hype: building things from first principles, understanding the math before running the code, and never losing the curiosity that started it all.
+        </p>
+      </div>
+    </div>
+
+    <!-- Active Research Pillars / Focus Areas -->
+    <div class="space-y-3">
+      <h4 class="text-xs font-mono uppercase font-semibold text-zinc-500 dark:text-zinc-400 tracking-wider">
+        Core Intellectual Interests
+      </h4>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+        <div class="p-4 rounded-2xl bg-white dark:bg-[#12151e] border border-zinc-200/80 dark:border-zinc-800 shadow-2xs space-y-1.5">
+          <div class="flex items-center gap-2">
+            <span class="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">01</span>
+            <h5 class="text-sm font-bold text-zinc-900 dark:text-zinc-100">
+              Machine Learning & Deep Architectures
+            </h5>
+          </div>
+          <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+            Neural representations, generative modeling, representation learning, and modern sequence architectures.
+          </p>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-white dark:bg-[#12151e] border border-zinc-200/80 dark:border-zinc-800 shadow-2xs space-y-1.5">
+          <div class="flex items-center gap-2">
+            <span class="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">02</span>
+            <h5 class="text-sm font-bold text-zinc-900 dark:text-zinc-100">
+              Autonomous Systems & RL (The Summit)
+            </h5>
+          </div>
+          <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+            Sequential decision-making under uncertainty, policy optimization, and goal-directed agent behaviors.
+          </p>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-white dark:bg-[#12151e] border border-zinc-200/80 dark:border-zinc-800 shadow-2xs space-y-1.5">
+          <div class="flex items-center gap-2">
+            <span class="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">03</span>
+            <h5 class="text-sm font-bold text-zinc-900 dark:text-zinc-100">
+              Mathematical Foundations & Optimization
+            </h5>
+          </div>
+          <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+            Linear algebra, probability theory, multivariable calculus, and optimization dynamics that make learning possible.
+          </p>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-white dark:bg-[#12151e] border border-zinc-200/80 dark:border-zinc-800 shadow-2xs space-y-1.5">
+          <div class="flex items-center gap-2">
+            <span class="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">04</span>
+            <h5 class="text-sm font-bold text-zinc-900 dark:text-zinc-100">
+              Systems Rigor & First Principles
+            </h5>
+          </div>
+          <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+            Algorithmic problem-solving, clean code craftsmanship, reproducible experiments, and systems engineering.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Subsection 2: Life & Curiosities -->
+  <div id="about-subpanel-personal" class="about-subpanel hidden space-y-6">
+    <!-- Editorial Narrative of Life -->
+    <div class="p-6 sm:p-7 rounded-3xl bg-white dark:bg-[#12151e] border border-zinc-200/80 dark:border-zinc-800 shadow-xs space-y-5">
+      <div class="space-y-1">
+        <span class="text-xs font-mono font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+          Beyond the Code
+        </span>
+        <h3 class="text-lg sm:text-xl font-bold text-zinc-900 dark:text-white">
+          Curiosity, Stories & The Things That Make Life Rich
+        </h3>
+      </div>
+
+      <div class="text-sm sm:text-base leading-relaxed text-zinc-700 dark:text-zinc-300 space-y-3.5">
+        <p>
+          I enjoy learning for its own sake—whether that means getting lost in a book, exploring an unfamiliar idea, watching a film that stays in my head for days, or going down an unnecessarily deep rabbit hole about something I happened to find interesting.
+        </p>
+        <p>
+          I have always been drawn to stories, particularly ones built around intelligent characters, difficult choices, mystery, ambition, and transformation. I enjoy films and series that give me something to think about after they end, and I have a particular weakness for characters who are clever, complicated, and a little difficult to categorize.
+        </p>
+        <p>
+          I read across fiction, history, psychology, philosophy, science, and anything else that happens to catch my curiosity. I don't really have a strict distinction between "useful" and "useless" knowledge—I like the feeling of understanding something simply because it was previously unknown to me.
+        </p>
+        <p>
+          Outside of studying and work, I care about staying physically active, exploring new places and ideas, having long conversations, and continuously trying to become a better version of myself. I also enjoy technology in a much less professional sense: tinkering with devices, discovering new tools, and occasionally spending far too much time figuring out how something works when I could have simply left it alone.
+        </p>
+      </div>
+
+      <!-- Core Life Philosophy Callout -->
+      <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-indigo-500/10 border-l-4 border-amber-500 border-y border-r border-amber-200/50 dark:border-amber-900/40 space-y-1.5">
+        <span class="text-[11px] font-mono font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-300">
+          Perspective
+        </span>
+        <p class="text-sm sm:text-base font-medium text-zinc-900 dark:text-zinc-100 leading-relaxed italic">
+          "I'm interested in the intersection of discipline and curiosity: building a life that is ambitious without becoming entirely about achievement. There are things I want to accomplish, places I want to see, people I want to know, stories I want to experience, and questions I still want to answer."
+        </p>
+      </div>
+    </div>
+
+    <!-- Cultural Trackers: Goodreads & IMDb -->
+    <div class="space-y-3">
+      <h4 class="text-xs font-mono uppercase font-semibold text-zinc-500 dark:text-zinc-400 tracking-wider">
+        Cultural Trackers & Personal Profiles
+      </h4>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+        <!-- Goodreads Card -->
+        <a
+          href="https://www.goodreads.com/user/show/155947404-arman-heidari"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group p-5 rounded-2xl bg-white dark:bg-[#12151e] border border-zinc-200/80 dark:border-zinc-800 shadow-2xs hover:border-amber-500/50 dark:hover:border-amber-500/40 hover:shadow-md transition-all flex flex-col justify-between space-y-4"
+        >
+          <div class="space-y-2.5">
+            <div class="flex items-center justify-between">
+              <!-- Goodreads Icon / Badge -->
+              <div class="w-10 h-10 rounded-xl bg-[#f4f1ea] dark:bg-[#2c241d] border border-[#e8dfd5] dark:border-[#42362b] flex items-center justify-center text-[#553b08] dark:text-[#f4f1ea] shadow-xs">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M11.43 23.995c-3.608-.208-6.19-2.075-6.526-4.717-.066-.516.035-.745.397-.905.353-.156.634.027.818.502.83 2.146 3.013 3.528 5.485 3.473 3.328-.074 5.756-2.263 5.772-5.187.014-2.585-2.05-4.492-4.93-4.568-1.583-.042-3.02.483-4.205 1.542-.358.32-.619.345-.888-.045-.37-.535-.208-.887.218-1.282 1.486-1.378 3.308-2.073 5.34-2.029 3.996.086 6.942 2.766 6.942 6.32 0 4.103-3.47 7.37-8.422 6.896zm.268-10.763c-3.692 0-6.402-2.73-6.402-6.46 0-3.73 2.71-6.46 6.402-6.46 3.692 0 6.402 2.73 6.402 6.46 0 3.73-2.71 6.46-6.402 6.46zm0-1.846c2.582 0 4.417-2.034 4.417-4.614 0-2.58-1.835-4.614-4.417-4.614-2.582 0-4.417 2.034-4.417 4.614 0 2.58 1.835 4.614 4.417 4.614z"/>
+                </svg>
+              </div>
+
+              <span class="text-xs font-mono text-zinc-400 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors flex items-center gap-1">
+                <span>goodreads.com</span>
+                <svg class="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M7 17l10-10"/>
+                  <path d="M7 7h10v10"/>
+                </svg>
+              </span>
+            </div>
+
+            <div>
+              <h5 class="text-base font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                Goodreads Reading Diary
+              </h5>
+              <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed mt-1">
+                Books, ratings, and shelves across fiction, philosophy, history, and psychology.
+              </p>
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between text-[11px] font-mono text-zinc-400">
+            <span>Reading Profile</span>
+            <span class="text-amber-600 dark:text-amber-400 font-semibold group-hover:underline">Visit Profile ↗</span>
+          </div>
+        </a>
+
+        <!-- IMDb Card -->
+        <a
+          href="https://www.imdb.com/user/p.t3rkgngjonmfqrodgclj43w2ma?ref_=hm_nv_profile"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group p-5 rounded-2xl bg-white dark:bg-[#12151e] border border-zinc-200/80 dark:border-zinc-800 shadow-2xs hover:border-yellow-500/50 dark:hover:border-yellow-500/40 hover:shadow-md transition-all flex flex-col justify-between space-y-4"
+        >
+          <div class="space-y-2.5">
+            <div class="flex items-center justify-between">
+              <!-- Official IMDb Badge -->
+              <div class="w-10 h-10 rounded-xl bg-[#f5c518] flex items-center justify-center text-black font-extrabold text-xs tracking-tighter shadow-xs">
+                IMDb
+              </div>
+
+              <span class="text-xs font-mono text-zinc-400 group-hover:text-yellow-600 dark:group-hover:text-yellow-400 transition-colors flex items-center gap-1">
+                <span>imdb.com</span>
+                <svg class="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M7 17l10-10"/>
+                  <path d="M7 7h10v10"/>
+                </svg>
+              </span>
+            </div>
+
+            <div>
+              <h5 class="text-base font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-yellow-600 dark:group-hover:text-yellow-400 transition-colors">
+                IMDb Cinema & Series Watchlist
+              </h5>
+              <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed mt-1">
+                Ratings, reviews, and watchlists for stories with clever, complicated, and unforgettable characters.
+              </p>
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between text-[11px] font-mono text-zinc-400">
+            <span>Cinema Diary</span>
+            <span class="text-yellow-600 dark:text-yellow-400 font-semibold group-hover:underline">Visit Profile ↗</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Things I Enjoy Chips -->
+    <div class="p-5 rounded-2xl bg-white dark:bg-[#12151e] border border-zinc-200/80 dark:border-zinc-800 shadow-2xs space-y-3">
+      <h4 class="text-xs font-mono uppercase font-semibold text-zinc-500 dark:text-zinc-400 tracking-wider">
+        A Few Things I Enjoy
+      </h4>
+      <div class="flex flex-wrap gap-2">
+        {thingsIEnjoy.map((item) => (
+          <span class="inline-flex items-center px-3 py-1 rounded-xl text-xs font-medium bg-zinc-100 hover:bg-zinc-200/80 dark:bg-zinc-800 dark:hover:bg-zinc-700/80 text-zinc-700 dark:text-zinc-300 border border-zinc-200/70 dark:border-zinc-700/60 transition-colors select-none">
+            {item}
+          </span>
+        ))}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function setupAboutSubtabs() {
+    const buttons = document.querySelectorAll<HTMLButtonElement>('[data-about-subtab]');
+    const panels = document.querySelectorAll<HTMLElement>('.about-subpanel');
+
+    function switchSubtab(targetId: string) {
+      if (!targetId) return;
+
+      buttons.forEach((b) => {
+        const isActive = b.getAttribute('data-about-subtab') === targetId;
+        if (isActive) {
+          b.classList.add('active', 'bg-white', 'dark:bg-[#12151e]', 'text-zinc-900', 'dark:text-white', 'shadow-xs', 'border', 'border-zinc-200/60', 'dark:border-zinc-700/60');
+          b.classList.remove('text-zinc-500', 'dark:text-zinc-400');
+        } else {
+          b.classList.remove('active', 'bg-white', 'dark:bg-[#12151e]', 'text-zinc-900', 'dark:text-white', 'shadow-xs', 'border', 'border-zinc-200/60', 'dark:border-zinc-700/60');
+          b.classList.add('text-zinc-500', 'dark:text-zinc-400');
+        }
+      });
+
+      panels.forEach((panel) => {
+        if (panel.id === `about-subpanel-${targetId}`) {
+          panel.classList.remove('hidden');
+        } else {
+          panel.classList.add('hidden');
+        }
+      });
+    }
+
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.getAttribute('data-about-subtab');
+        if (targetId) switchSubtab(targetId);
+      });
+    });
+  }
+
+  setupAboutSubtabs();
+  document.addEventListener('astro:after-swap', setupAboutSubtabs);
+</script>

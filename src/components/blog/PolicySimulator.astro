@@ -1,0 +1,132 @@
+---
+// src/components/blog/PolicySimulator.astro
+---
+
+<div class="my-8 p-6 rounded-2xl bg-zinc-50 dark:bg-[#131622] border border-zinc-200 dark:border-zinc-800 shadow-sm not-prose space-y-5">
+  <div class="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800/80 pb-3">
+    <div class="flex items-center gap-2">
+      <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+      <h4 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 font-mono">
+        Interactive Demo: PPO Clipped Objective
+      </h4>
+    </div>
+    <span class="text-[11px] font-mono text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/50 px-2 py-0.5 rounded">
+      Live Simulation
+    </span>
+  </div>
+
+  <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+    Adjust the probability ratio <span class="font-mono text-zinc-800 dark:text-zinc-200">r_t(θ)</span> and advantage estimate <span class="font-mono text-zinc-800 dark:text-zinc-200">A_t</span> to observe how the clipped surrogate objective bounds destructive policy updates:
+  </p>
+
+  <!-- Interactive Controls -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono">
+    <!-- Ratio Slider -->
+    <div class="space-y-1.5 p-3 rounded-xl bg-white dark:bg-[#1a1e2d] border border-zinc-200/80 dark:border-zinc-800">
+      <div class="flex justify-between">
+        <label for="ratio-slider" class="text-zinc-700 dark:text-zinc-300">Ratio r_t(θ):</label>
+        <span id="ratio-val" class="font-bold text-indigo-600 dark:text-indigo-400">1.25</span>
+      </div>
+      <input
+        type="range"
+        id="ratio-slider"
+        min="0.5"
+        max="1.5"
+        step="0.05"
+        value="1.25"
+        class="w-full accent-indigo-600 cursor-pointer"
+      />
+    </div>
+
+    <!-- Advantage Slider -->
+    <div class="space-y-1.5 p-3 rounded-xl bg-white dark:bg-[#1a1e2d] border border-zinc-200/80 dark:border-zinc-800">
+      <div class="flex justify-between">
+        <label for="advantage-slider" class="text-zinc-700 dark:text-zinc-300">Advantage A_t:</label>
+        <span id="advantage-val" class="font-bold text-indigo-600 dark:text-indigo-400">1.00</span>
+      </div>
+      <input
+        type="range"
+        id="advantage-slider"
+        min="-2.0"
+        max="2.0"
+        step="0.1"
+        value="1.0"
+        class="w-full accent-indigo-600 cursor-pointer"
+      />
+    </div>
+  </div>
+
+  <!-- Real-Time Computed Metrics -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono pt-1">
+    <div class="p-3 rounded-xl bg-white dark:bg-[#1a1e2d] border border-zinc-200/80 dark:border-zinc-800">
+      <span class="text-zinc-400 text-[10px] block">Unclipped (r_t · A_t)</span>
+      <span id="unclipped-res" class="text-sm font-bold text-zinc-800 dark:text-zinc-200">1.250</span>
+    </div>
+
+    <div class="p-3 rounded-xl bg-white dark:bg-[#1a1e2d] border border-zinc-200/80 dark:border-zinc-800">
+      <span class="text-zinc-400 text-[10px] block">Clipped Bound</span>
+      <span id="clipped-res" class="text-sm font-bold text-zinc-800 dark:text-zinc-200">1.200</span>
+    </div>
+
+    <div class="p-3 rounded-xl bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-800/80">
+      <span class="text-indigo-600 dark:text-indigo-400 text-[10px] block font-semibold">PPO Objective Value</span>
+      <span id="objective-res" class="text-sm font-bold text-indigo-700 dark:text-indigo-300">1.200</span>
+    </div>
+  </div>
+
+  <!-- Status alert -->
+  <div id="clip-status" class="p-2.5 rounded-lg text-xs font-mono flex items-center gap-2 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/60">
+    <span class="text-base">⚠️</span>
+    <span>Clipping is ACTIVE: Update bounded to protect policy stability!</span>
+  </div>
+</div>
+
+<script>
+  function setupPolicySimulator() {
+    const ratioSlider = document.getElementById('ratio-slider') as HTMLInputElement | null;
+    const advantageSlider = document.getElementById('advantage-slider') as HTMLInputElement | null;
+    const ratioVal = document.getElementById('ratio-val');
+    const advantageVal = document.getElementById('advantage-val');
+    const unclippedRes = document.getElementById('unclipped-res');
+    const clippedRes = document.getElementById('clipped-res');
+    const objectiveRes = document.getElementById('objective-res');
+    const clipStatus = document.getElementById('clip-status');
+
+    if (!ratioSlider || !advantageSlider || !ratioVal || !advantageVal || !unclippedRes || !clippedRes || !objectiveRes || !clipStatus) return;
+
+    const eps = 0.2;
+
+    function update() {
+      const r = parseFloat(ratioSlider.value);
+      const A = parseFloat(advantageSlider.value);
+
+      ratioVal.textContent = r.toFixed(2);
+      advantageVal.textContent = A.toFixed(2);
+
+      const unclipped = r * A;
+      const clippedR = Math.max(1 - eps, Math.min(1 + eps, r));
+      const clipped = clippedR * A;
+      const finalObj = Math.min(unclipped, clipped);
+
+      unclippedRes.textContent = unclipped.toFixed(3);
+      clippedRes.textContent = clipped.toFixed(3);
+      objectiveRes.textContent = finalObj.toFixed(3);
+
+      const isClipped = Math.abs(finalObj - unclipped) > 0.001;
+      if (isClipped) {
+        clipStatus.className = 'p-2.5 rounded-lg text-xs font-mono flex items-center gap-2 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/60';
+        clipStatus.innerHTML = `<span>⚠️</span> <span>Clipping is ACTIVE: Update bounded to protect policy stability!</span>`;
+      } else {
+        clipStatus.className = 'p-2.5 rounded-lg text-xs font-mono flex items-center gap-2 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/60';
+        clipStatus.innerHTML = `<span>✔</span> <span>Update is within trust region: Normal gradient update applied.</span>`;
+      }
+    }
+
+    ratioSlider.addEventListener('input', update);
+    advantageSlider.addEventListener('input', update);
+    update();
+  }
+
+  setupPolicySimulator();
+  document.addEventListener('astro:after-swap', setupPolicySimulator);
+</script>

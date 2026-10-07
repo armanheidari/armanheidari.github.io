@@ -1,0 +1,118 @@
+---
+// src/components/hub/ProjectsPanel.astro
+import { projects } from '../../data/projects';
+---
+
+<div class="space-y-6">
+  <div class="flex items-center justify-between pb-2">
+    <div>
+      <h2 class="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white tracking-tight">
+        06 - Selected Projects
+      </h2>
+      <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+        Architectural implementations across machine learning pipelines, conversational AI, distributed event streaming, and computer systems.
+      </p>
+    </div>
+    <span class="text-xs font-mono px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">
+      {projects.length} Projects
+    </span>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    {projects.map((proj) => (
+      <div class="p-5 rounded-2xl bg-white dark:bg-[#12151e] border border-zinc-200/80 dark:border-zinc-800 shadow-sm hover:border-zinc-300 dark:hover:border-zinc-700 transition-all flex flex-col justify-between space-y-4">
+        <div class="space-y-2.5">
+          <!-- Top row: Category & Year -->
+          <div class="flex items-center justify-between gap-2">
+            <span class="px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-zinc-100 dark:bg-zinc-800 text-indigo-600 dark:text-indigo-400">
+              {proj.category}
+            </span>
+            <span class="text-[11px] font-mono text-zinc-400">
+              {proj.year}
+            </span>
+          </div>
+
+          <!-- Title & Subtitle -->
+          <div>
+            <h3 class="text-base font-semibold text-zinc-900 dark:text-zinc-100 leading-snug">
+              {proj.title}
+            </h3>
+            <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 font-medium">
+              {proj.subtitle}
+            </p>
+          </div>
+
+          <!-- Description -->
+          <p class="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">
+            {proj.description}
+          </p>
+
+          <!-- Highlights List -->
+          <ul class="space-y-1.5 pt-1 text-xs text-zinc-600 dark:text-zinc-300">
+            {proj.highlights.map((highlight) => (
+              <li class="flex items-start gap-1.5">
+                <span class="text-indigo-500 mt-0.5 text-[10px]">▸</span>
+                <span>{highlight}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <!-- Bottom row: Tech stack & Links -->
+        <div class="pt-3 border-t border-zinc-100 dark:border-zinc-800/80 space-y-3">
+          <!-- Tech Stack -->
+          <div class="flex flex-wrap gap-1">
+            {proj.techStack.map((tech) => (
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800/80 text-zinc-600 dark:text-zinc-400">
+                {tech}
+              </span>
+            ))}
+          </div>
+
+          <!-- Metric badge & GitHub Link -->
+          <div class="flex items-center justify-between pt-1">
+            {proj.metrics ? (
+              <span class="inline-flex items-center gap-1 text-[11px] font-mono font-medium text-emerald-600 dark:text-emerald-400">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                <span>{proj.metrics}</span>
+              </span>
+            ) : <span />}
+
+            <div class="flex items-center gap-2">
+              {proj.githubUrl && (
+                <a
+                  href={proj.githubUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 transition-colors"
+                  aria-label={`View ${proj.title} on GitHub`}
+                >
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"></path>
+                    <path d="M9 18c-4.51 2-5-2-7-2"></path>
+                  </svg>
+                  <span>Code</span>
+                </a>
+              )}
+              {proj.liveUrl && (
+                <a
+                  href={proj.liveUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-lg bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900 text-indigo-700 dark:text-indigo-300 transition-colors"
+                >
+                  <span>Demo</span>
+                  <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                    <polyline points="15 3 21 3 21 9"></polyline>
+                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                  </svg>
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>

@@ -1,0 +1,152 @@
+---
+// src/components/hub/ResearchPanel.astro
+import { publications } from '../../data/publications';
+---
+
+<div class="space-y-6">
+  <div class="flex items-center justify-between pb-2">
+    <div>
+      <h2 class="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white tracking-tight">
+        04 - Research & Publications
+      </h2>
+      <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+        Peer-reviewed papers, Master’s thesis research, and preprints in reinforcement learning and intelligent systems.
+      </p>
+    </div>
+    <span class="text-xs font-mono px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">
+      {publications.length} Records
+    </span>
+  </div>
+
+  <div class="space-y-4">
+    {publications.map((pub) => (
+      <article class="p-5 rounded-2xl bg-white dark:bg-[#12151e] border border-zinc-200/80 dark:border-zinc-800 shadow-sm hover:border-zinc-300 dark:hover:border-zinc-700 transition-all space-y-3">
+        <!-- Top Metadata & Status Badge -->
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <span class:list={[
+              "px-2 py-0.5 rounded text-[11px] font-mono font-medium",
+              pub.status === "Published" && "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800",
+              pub.status === "Master’s Thesis" && "bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800",
+              pub.status === "In Progress" && "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800",
+              pub.status === "Preprint" && "bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800",
+            ]}>
+              {pub.status}
+            </span>
+            <span class="text-xs text-zinc-400 dark:text-zinc-500 font-mono">• {pub.year}</span>
+          </div>
+
+          <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+            {pub.venue}
+          </span>
+        </div>
+
+        <!-- Title -->
+        <h3 class="text-base font-semibold text-zinc-900 dark:text-zinc-100 leading-snug">
+          {pub.title}
+        </h3>
+
+        <!-- Authors -->
+        <p class="text-xs text-zinc-600 dark:text-zinc-300">
+          {pub.authors.map((author, index) => (
+            <>
+              {author.includes("Arman Heidari") ? (
+                <strong class="font-semibold text-zinc-900 dark:text-white underline decoration-indigo-500/50 underline-offset-2">
+                  {author}
+                </strong>
+              ) : (
+                <span>{author}</span>
+              )}
+              {index < pub.authors.length - 1 ? ", " : ""}
+            </>
+          ))}
+        </p>
+
+        <!-- Abstract Dropdown -->
+        <details class="group text-xs text-zinc-600 dark:text-zinc-400 bg-zinc-50/70 dark:bg-zinc-900/40 rounded-xl p-3 border border-zinc-200/50 dark:border-zinc-800/50">
+          <summary class="cursor-pointer font-medium text-zinc-700 dark:text-zinc-300 flex items-center justify-between select-none">
+            <span class="flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5 transition-transform group-open:rotate-90 text-indigo-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+              <span>Abstract</span>
+            </span>
+            <span class="text-[11px] text-zinc-400 font-mono group-open:hidden">expand</span>
+          </summary>
+          <p class="mt-2.5 leading-relaxed pt-2 border-t border-zinc-200/50 dark:border-zinc-800/50">
+            {pub.abstract}
+          </p>
+        </details>
+
+        <!-- Tags & Academic Actions -->
+        <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+          <!-- Tags -->
+          <div class="flex flex-wrap gap-1.5">
+            {pub.tags.map((tag) => (
+              <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
+                #{tag}
+              </span>
+            ))}
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex items-center gap-2">
+            {pub.links.map((link) => (
+              <a
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 transition-colors"
+              >
+                {link.type === 'pdf' && (
+                  <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                  </svg>
+                )}
+                {link.type === 'code' && (
+                  <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="16 18 22 12 16 6"></polyline>
+                    <polyline points="8 6 2 12 8 18"></polyline>
+                  </svg>
+                )}
+                <span>{link.label}</span>
+              </a>
+            ))}
+
+            <!-- BibTeX Trigger -->
+            <button
+              type="button"
+              class="bibtex-trigger inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60 transition-colors"
+              data-bibtex={pub.bibtex}
+            >
+              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"></path>
+                <path d="M6 6h10"></path>
+                <path d="M6 10h10"></path>
+              </svg>
+              <span>BibTeX</span>
+            </button>
+          </div>
+        </div>
+      </article>
+    ))}
+  </div>
+</div>
+
+<script>
+  function setupBibtexTriggers() {
+    document.querySelectorAll('.bibtex-trigger').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const target = e.currentTarget as HTMLElement;
+        const bibtex = target.getAttribute('data-bibtex');
+        if (bibtex) {
+          document.dispatchEvent(new CustomEvent('open-bibtex', { detail: { bibtex } }));
+        }
+      });
+    });
+  }
+
+  setupBibtexTriggers();
+  document.addEventListener('astro:after-swap', setupBibtexTriggers);
+</script>

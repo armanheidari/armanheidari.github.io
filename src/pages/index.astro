@@ -1,0 +1,24 @@
+---
+// src/pages/index.astro
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroSection from '../components/hub/HeroSection.astro';
+import NumberedMenu from '../components/hub/NumberedMenu.astro';
+import BibtexModal from '../components/hub/BibtexModal.astro';
+import { profile } from '../data/profile';
+---
+
+<BaseLayout
+  title={`${profile.name} | ${profile.role}`}
+  description={profile.researchStatement}
+>
+  <div class="w-full flex flex-col">
+    <!-- 1. Hero Card with Interactive Floating AI/RL Formulas -->
+    <HeroSection />
+
+    <!-- 2. Numbered Swiss Menu (Defaulted to 01 / About Me, Zero Horizontal Scrollbar) -->
+    <NumberedMenu />
+  </div>
+
+  <!-- Global BibTeX Modal for 1-click citation export -->
+  <BibtexModal />
+</BaseLayout>
