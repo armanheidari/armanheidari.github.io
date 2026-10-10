@@ -13,10 +13,13 @@ interface Props {
   article?: boolean;
 }
 
+const defaultDescription =
+  "M.Sc. student in Artificial Intelligence at Sharif University of Technology. Researching reinforcement learning, deep neural architectures, and intelligent systems.";
+
 const {
   title = profile.siteTitle,
-  description = profile.researchStatement,
-  image = profile.avatarUrl || "/images/arman-heidari.webp",
+  description = defaultDescription,
+  image = "/images/arman-heidari.jpg",
   article = false
 } = Astro.props;
 
@@ -38,7 +41,7 @@ const jsonLd = {
         "آرمان حیدری دانشگاه شریف"
       ],
       "url": "https://armanheidari.ir",
-      "image": "https://armanheidari.ir/images/arman-heidari.webp",
+      "image": "https://armanheidari.ir/images/arman-heidari.jpg",
       "jobTitle": "Master's Student in Artificial Intelligence",
       "description": `${profile.researchStatement} M.Sc. student at Sharif University of Technology.`,
       "email": `mailto:${profile.email}`,
@@ -120,18 +123,38 @@ const jsonLd = {
       content="Arman Heidari, آرمان حیدری, دانشگاه صنعتی شریف, Sharif University of Technology, شریف, هوش مصنوعی, یادگیری ماشین, یادگیری تقویتی, Artificial Intelligence, Machine Learning, Deep Learning, Reinforcement Learning, Computer Engineering, مهندسی کامپیوتر, رزومه آرمان حیدری, Arman Heidari CV, Arman Heidari Portfolio, armanheidari.ir"
     />
 
-    <!-- Open Graph / Facebook / LinkedIn / Telegram -->
-    <meta property="og:site_name" content="Arman Heidari" />
+    <!-- Mobile UI & Browser Chrome Theming -->
+    <meta name="theme-color" content="#fafaf9" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0c0e14" media="(prefers-color-scheme: dark)" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Arman Heidari" />
+    <meta name="application-name" content="Arman Heidari" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <!-- Open Graph / Telegram / WhatsApp / LinkedIn / Facebook -->
     <meta property="og:type" content={article ? "article" : "website"} />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={fullImage} />
+    <meta property="og:image:secure_url" content={fullImage} />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="800" />
+    <meta property="og:image:height" content="800" />
+    <meta property="og:image:alt" content="Arman Heidari - Academic Portfolio" />
+    <meta property="og:site_name" content="Arman Heidari | Academic Portfolio" />
     <meta property="og:locale" content="en_US" />
     <meta property="og:locale:alternate" content="fa_IR" />
 
-    <!-- Twitter / X -->
-    <meta property="twitter:card" content="summary_large_image" />
+    <!-- Twitter / X & Telegram Compact Card (Both standard 'name' and compatibility 'property' attributes) -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:url" content={canonicalURL} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={fullImage} />
+    <meta name="twitter:image:alt" content="Arman Heidari - Academic Portfolio" />
+    <meta property="twitter:card" content="summary" />
     <meta property="twitter:url" content={canonicalURL} />
     <meta property="twitter:title" content={title} />
     <meta property="twitter:description" content={description} />
