@@ -1,0 +1,34 @@
+# Arman Heidari (آرمان حیدری)
+
+> Official academic profile and research portfolio of Arman Heidari.
+> Website: https://armanheidari.ir
+
+## Biography & Identification
+- **Full Name**: Arman Heidari
+- **Persian Name**: آرمان حیدری
+- **Current Position**: M.Sc. Student in Artificial Intelligence at Sharif University of Technology (دانشگاه صنعتی شریف)
+- **Undergraduate Degree**: B.Sc. in Computer Engineering, Allameh Tabataba'i University (دانشگاه علامه طباطبائی)
+- **Undergraduate Honors**: First Rank in Computer Engineering Cohort (GPA: 3.96 / 4.00, 19.29 / 20.00; Major GPA: 19.35 / 20.00)
+- **Location**: Tehran, Iran
+
+## Core Research & Specializations
+- **Artificial Intelligence & Deep Learning**: Neural representations, optimization, and generative models.
+- **Reinforcement Learning**: Decision making in dynamic environments, policy optimization, autonomous agents.
+- **Data & First-Principles Engineering**: Distributed ETL architectures, algorithmic design, discrete mathematics.
+
+## Verified Academic & Professional Links
+- **Personal Website**: https://armanheidari.ir
+- **Curriculum Vitae**: https://armanheidari.ir/cv
+- **Google Scholar**: https://scholar.google.com/citations?user=fgeLGrAAAAAJ&hl=en
+- **ORCID**: https://orcid.org/0009-0005-7230-1878
+- **GitHub**: https://github.com/armanheidari
+- **LinkedIn**: https://www.linkedin.com/in/arman-heidari/
+
+## Key Projects & Code Repositories
+- **ISLE**: Interactive Simulation & Learning Environment (https://github.com/armanheidari/ISLE)
+- **Kharidyar Chatbot**: Intelligent customer dialogue engine (https://github.com/armanheidari/kharidyar-chatbot)
+- **Digisage**: Automated market intelligence & analytics (https://github.com/armanheidari/Digisage)
+- **Summarizing Pipeline**: NLP transformer summarization pipeline (https://github.com/armanheidari/Summarizing-Pipeline)
+- **Randomuser Data Pipeline**: Streaming Apache Kafka & Docker ETL (https://github.com/armanheidari/Randomuser-Data-Pipeline)
+- **TSETMC ETL & Analysis**: Tehran Stock Exchange financial analytics (https://github.com/armanheidari/TSETMC-ETL-Analysis)
+- **Basic Computer**: Complete CPU architecture simulator in Verilog (https://github.com/armanheidari/Basic-Computer)

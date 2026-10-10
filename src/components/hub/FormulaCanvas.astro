@@ -5,8 +5,9 @@
 <div
   id="formula-canvas-wrapper"
   class="absolute inset-0 w-full h-full overflow-hidden pointer-events-none select-none z-0"
+  aria-hidden="true"
 >
-  <canvas id="formula-canvas" class="w-full h-full block"></canvas>
+  <canvas id="formula-canvas" class="w-full h-full block pointer-events-none select-none"></canvas>
 </div>
 
 <script>
@@ -15,27 +16,42 @@
     type: "normal" | "sup" | "sub";
   }
 
-  interface MeasuredSegment {
-    text: string;
-    type: "normal" | "sup" | "sub";
+  interface FormulaSprite {
+    normalCanvas: HTMLCanvasElement;
+    energizedCanvas: HTMLCanvasElement;
     width: number;
+    height: number;
   }
 
   interface Particle {
-    rawFormula: string;
-    parsed: FormulaSegment[];
-    segments: MeasuredSegment[];
+    formulaIndex: number;
     x: number;
     y: number;
     vx: number;
     vy: number;
     baseOpacity: number;
     currentOpacity: number;
-    fontSize: number;
     width: number;
     height: number;
     isEnergized: boolean;
   }
+
+  const formulas = [
+    "V^*(s) = max_a [R(s,a) + γ ∑ P(s'|s,a) V^*(s')]",
+    "∇_θ J(θ) = E_π [∇_θ log π_θ(a|s) Q^π(s,a)]",
+    "L_{CLIP}(θ) = E [min(r_t A_t, clip(r_t, 1±ε) A_t)]",
+    "Attention(Q,K,V) = softmax(QK^T / √d_k)V",
+    "δ_t = R_{t+1} + γ V(S_{t+1}) - V(S_t)",
+    "L_{CE} = -∑ y_i log(ŷ_i)",
+    "θ_{t+1} = θ_t - η ∇_θ L(θ)",
+    "Q(s,a) ← Q(s,a) + α [r + γ max_{a'} Q(s',a') - Q(s,a)]",
+    "p(θ|D) = p(D|θ) p(θ) / p(D)",
+    "D_{KL}(π_{old} || π) ≤ δ",
+    "A^{GAE} = ∑ (γλ)^l δ_{t+l}",
+    "σ(z) = 1 / (1 + e^{-z})",
+    "E_{τ~π} [∑ γ^t R(s_t, a_t)]",
+    "argmax_a Q^*(s, a)",
+  ];
 
   function parseFormula(raw: string): FormulaSegment[] {
     const segments: FormulaSegment[] = [];
@@ -83,67 +99,92 @@
     return segments;
   }
 
-  function measureSegments(
-    ctx: CanvasRenderingContext2D,
-    parsed: FormulaSegment[],
+  const parsedFormulas = formulas.map(parseFormula);
+
+  function createSprites(
     fontSize: number,
-  ): { segments: MeasuredSegment[]; totalWidth: number } {
-    const normalFont = `600 ${fontSize}px "JetBrains Mono", monospace`;
+    dpr: number,
+    isDark: boolean
+  ): FormulaSprite[] {
+    const normalFont = `600 ${fontSize}px "JetBrains Mono", ui-monospace, monospace`;
     const scriptSize = Math.max(8, Math.round(fontSize * 0.72));
-    const scriptFont = `600 ${scriptSize}px "JetBrains Mono", monospace`;
+    const scriptFont = `600 ${scriptSize}px "JetBrains Mono", ui-monospace, monospace`;
 
-    let totalWidth = 0;
-    const segments: MeasuredSegment[] = [];
+    const baseColor = isDark ? "rgb(226, 232, 240)" : "rgb(30, 41, 59)";
+    const highlightColor = isDark ? "rgb(59, 130, 246)" : "rgb(37, 99, 235)";
 
-    for (let s = 0; s < parsed.length; s++) {
-      const seg = parsed[s];
-      ctx.font = seg.type === "normal" ? normalFont : scriptFont;
-      const width = ctx.measureText(seg.text).width;
-      segments.push({
-        text: seg.text,
-        type: seg.type,
-        width,
+    const measureCanvas = document.createElement("canvas");
+    const mctx = measureCanvas.getContext("2d");
+    if (!mctx) return [];
+
+    return parsedFormulas.map((segments) => {
+      let totalWidth = 0;
+      const measured = segments.map((seg) => {
+        mctx.font = seg.type === "normal" ? normalFont : scriptFont;
+        const w = mctx.measureText(seg.text).width;
+        totalWidth += w;
+        return { ...seg, width: w };
       });
-      totalWidth += width;
-    }
 
-    return { segments, totalWidth };
-  }
+      const totalH = Math.ceil(fontSize * 2.2);
+      const totalW = Math.ceil(totalWidth) + 4;
+      const baselineY = Math.round(fontSize * 1.4);
 
-  function drawFormula(
-    ctx: CanvasRenderingContext2D,
-    segments: MeasuredSegment[],
-    x: number,
-    y: number,
-    fontSize: number,
-    color: string,
-    opacity: number,
-  ) {
-    const normalFont = `600 ${fontSize}px "JetBrains Mono", monospace`;
-    const scriptSize = Math.max(8, Math.round(fontSize * 0.72));
-    const scriptFont = `600 ${scriptSize}px "JetBrains Mono", monospace`;
-
-    ctx.fillStyle = `rgba(${color}, ${opacity})`;
-
-    let curX = x;
-    for (let s = 0; s < segments.length; s++) {
-      const seg = segments[s];
-      if (seg.type === "normal") {
-        ctx.font = normalFont;
-        ctx.fillText(seg.text, curX, y);
-      } else if (seg.type === "sup") {
-        ctx.font = scriptFont;
-        // Elevate powers / superscripts above baseline
-        const supY = y - fontSize * 0.4;
-        ctx.fillText(seg.text, curX, supY);
-      } else if (seg.type === "sub") {
-        ctx.font = scriptFont;
-        // Lower subscripts below baseline
-        const subY = y + fontSize * 0.22;
-        ctx.fillText(seg.text, curX, subY);
+      // Normal state offscreen sprite
+      const normalCanvas = document.createElement("canvas");
+      normalCanvas.width = Math.ceil(totalW * dpr);
+      normalCanvas.height = Math.ceil(totalH * dpr);
+      const nctx = normalCanvas.getContext("2d");
+      if (nctx) {
+        nctx.scale(dpr, dpr);
+        nctx.fillStyle = baseColor;
+        let curX = 2;
+        for (const seg of measured) {
+          if (seg.type === "normal") {
+            nctx.font = normalFont;
+            nctx.fillText(seg.text, curX, baselineY);
+          } else if (seg.type === "sup") {
+            nctx.font = scriptFont;
+            nctx.fillText(seg.text, curX, baselineY - fontSize * 0.4);
+          } else if (seg.type === "sub") {
+            nctx.font = scriptFont;
+            nctx.fillText(seg.text, curX, baselineY + fontSize * 0.22);
+          }
+          curX += seg.width;
+        }
       }
-      curX += seg.width;
-    }
+
+      // Energized (hover proximity) offscreen sprite
+      const energizedCanvas = document.createElement("canvas");
+      energizedCanvas.width = Math.ceil(totalW * dpr);
+      energizedCanvas.height = Math.ceil(totalH * dpr);
+      const ectx = energizedCanvas.getContext("2d");
+      if (ectx) {
+        ectx.scale(dpr, dpr);
+        ectx.fillStyle = highlightColor;
+        let curX = 2;
+        for (const seg of measured) {
+          if (seg.type === "normal") {
+            ectx.font = normalFont;
+            ectx.fillText(seg.text, curX, baselineY);
+          } else if (seg.type === "sup") {
+            ectx.font = scriptFont;
+            ectx.fillText(seg.text, curX, baselineY - fontSize * 0.4);
+          } else if (seg.type === "sub") {
+            ectx.font = scriptFont;
+            ectx.fillText(seg.text, curX, baselineY + fontSize * 0.22);
+          }
+          curX += seg.width;
+        }
+      }
+
+      return {
+        normalCanvas,
+        energizedCanvas,
+        width: totalW,
+        height: totalH,
+      };
+    });
   }
 
   function setupFormulaCanvas() {
@@ -153,90 +194,119 @@
     ) as HTMLCanvasElement | null;
     if (!wrapper || !canvas) return;
 
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
-
-    const formulas = [
-      "V^*(s) = max_a [R(s,a) + γ ∑ P(s'|s,a) V^*(s')]",
-      "∇_θ J(θ) = E_π [∇_θ log π_θ(a|s) Q^π(s,a)]",
-      "L_{CLIP}(θ) = E [min(r_t A_t, clip(r_t, 1±ε) A_t)]",
-      "Attention(Q,K,V) = softmax(QK^T / √d_k)V",
-      "δ_t = R_{t+1} + γ V(S_{t+1}) - V(S_t)",
-      "L_{CE} = -∑ y_i log(ŷ_i)",
-      "θ_{t+1} = θ_t - η ∇_θ L(θ)",
-      "Q(s,a) ← Q(s,a) + α [r + γ max_{a'} Q(s',a') - Q(s,a)]",
-      "p(θ|D) = p(D|θ) p(θ) / p(D)",
-      "D_{KL}(π_{old} || π) ≤ δ",
-      "A^{GAE} = ∑ (γλ)^l δ_{t+l}",
-      "σ(z) = 1 / (1 + e^{-z})",
-      "E_{τ~π} [∑ γ^t R(s_t, a_t)]",
-      "argmax_a Q^*(s, a)",
-    ];
 
     let width = 0;
     let height = 0;
     let dpr = 1;
+    let currentFontSize = 13;
+    let cachedIsDark = document.documentElement.classList.contains("dark");
     let particles: Particle[] = [];
+    let sprites: FormulaSprite[] = [];
     let mouse = { x: -9999, y: -9999, active: false };
-    let animId: number;
+    let animId: number = 0;
+    let isRunning = false;
+    let lastTime: number = 0;
 
-    function resize() {
-      if (!wrapper || !canvas || !ctx) return;
-      const rect = wrapper.getBoundingClientRect();
-      width = rect.width;
-      height = rect.height;
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
+    let cachedRect = {
+      left: 0,
+      top: 0,
+      width: 0,
+      height: 0,
+    };
 
-      canvas.width = width * dpr;
-      canvas.height = height * dpr;
-      ctx.scale(dpr, dpr);
+    function updateRect() {
+      if (!wrapper) return;
+      const r = wrapper.getBoundingClientRect();
+      cachedRect = {
+        left: r.left + window.scrollX,
+        top: r.top + window.scrollY,
+        width: r.width,
+        height: r.height,
+      };
+    }
 
-      if (particles.length === 0 && width > 0 && height > 0) {
-        initParticles();
-      } else if (particles.length > 0) {
-        const newFontSize = width < 640 ? 11 : 13;
-        for (const p of particles) {
-          p.fontSize = newFontSize;
-          const measured = measureSegments(ctx, p.parsed, newFontSize);
-          p.segments = measured.segments;
-          p.width = measured.totalWidth;
-          p.height = newFontSize * 1.8;
+    function refreshSprites(force = false) {
+      const isDark = document.documentElement.classList.contains("dark");
+      if (!force && sprites.length > 0 && isDark === cachedIsDark) {
+        return;
+      }
+      cachedIsDark = isDark;
+      sprites = createSprites(currentFontSize, dpr, isDark);
+      for (const p of particles) {
+        const sp = sprites[p.formulaIndex];
+        if (sp) {
+          p.width = sp.width;
+          p.height = sp.height;
         }
       }
     }
 
+    function resize() {
+      if (!wrapper || !canvas || !ctx) return;
+      const rect = wrapper.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) return;
+
+      const newDpr = Math.min(window.devicePixelRatio || 1, 2);
+      const newWidth = Math.round(rect.width);
+      const newHeight = Math.round(rect.height);
+      const newFontSize = newWidth < 640 ? 11 : 13;
+
+      // CRITICAL: If dimensions haven't changed (e.g. tab reactivation), bail out immediately with 0 work
+      if (
+        newWidth === width &&
+        newHeight === height &&
+        newDpr === dpr &&
+        newFontSize === currentFontSize &&
+        sprites.length > 0
+      ) {
+        updateRect();
+        return;
+      }
+
+      width = newWidth;
+      height = newHeight;
+      dpr = newDpr;
+      const fontSizeChanged = newFontSize !== currentFontSize;
+      currentFontSize = newFontSize;
+
+      canvas.width = Math.ceil(width * dpr);
+      canvas.height = Math.ceil(height * dpr);
+      ctx.scale(dpr, dpr);
+
+      updateRect();
+      refreshSprites(fontSizeChanged || sprites.length === 0);
+
+      if (particles.length === 0) {
+        initParticles();
+      }
+    }
+
     function initParticles() {
-      if (!ctx) return;
       particles = [];
-      const count = width < 640 ? 10 : width < 1100 ? 16 : 24;
+      const count = width < 640 ? 9 : width < 1100 ? 15 : 22;
 
       for (let i = 0; i < count; i++) {
-        const rawFormula = formulas[i % formulas.length];
-        const parsed = parseFormula(rawFormula);
-        const fontSize = width < 640 ? 11 : 13;
-
-        const measured = measureSegments(ctx, parsed, fontSize);
-        const pWidth = measured.totalWidth;
-        const pHeight = fontSize * 1.8;
+        const formulaIndex = i % formulas.length;
+        const sp = sprites[formulaIndex];
+        const pWidth = sp ? sp.width : 120;
+        const pHeight = sp ? sp.height : 24;
 
         const x = Math.random() * Math.max(20, width - pWidth - 30) + 15;
-        const y =
-          Math.random() * Math.max(20, height - pHeight - 30) + pHeight + 10;
+        const y = Math.random() * Math.max(20, height - pHeight - 30) + pHeight + 10;
 
-        const speed = 0.3 + Math.random() * 0.3;
+        const speed = 0.32 + Math.random() * 0.28;
         const angle = Math.random() * Math.PI * 2;
 
         particles.push({
-          rawFormula,
-          parsed,
-          segments: measured.segments,
+          formulaIndex,
           x,
           y,
           vx: Math.cos(angle) * speed,
           vy: Math.sin(angle) * speed,
           baseOpacity: 0.12 + Math.random() * 0.05,
           currentOpacity: 0.12,
-          fontSize,
           width: pWidth,
           height: pHeight,
           isEnergized: false,
@@ -244,19 +314,21 @@
       }
     }
 
-    // Direct window-level pointer tracking for zero latency
     function handlePointerMove(e: PointerEvent) {
-      if (!wrapper) return;
-      const rect = wrapper.getBoundingClientRect();
-      // Only track if roughly within or near the hero area
+      const pageX = e.pageX;
+      const pageY = e.pageY;
+
+      const rx = pageX - cachedRect.left;
+      const ry = pageY - cachedRect.top;
+
       if (
-        e.clientY >= rect.top - 50 &&
-        e.clientY <= rect.bottom + 50 &&
-        e.clientX >= rect.left - 50 &&
-        e.clientX <= rect.right + 50
+        rx >= -40 &&
+        rx <= cachedRect.width + 40 &&
+        ry >= -40 &&
+        ry <= cachedRect.height + 40
       ) {
-        mouse.x = e.clientX - rect.left;
-        mouse.y = e.clientY - rect.top;
+        mouse.x = rx;
+        mouse.y = ry;
         mouse.active = true;
       } else {
         mouse.active = false;
@@ -271,25 +343,60 @@
       mouse.y = -9999;
     }
 
-    window.addEventListener("pointermove", handlePointerMove, {
-      passive: true,
+    window.addEventListener("pointermove", handlePointerMove, { passive: true });
+    document.addEventListener("mouseleave", handlePointerLeave, { passive: true });
+    window.addEventListener("scroll", updateRect, { passive: true });
+    window.addEventListener("resize", updateRect, { passive: true });
+
+    // Handle tab switching & window blur: pause RAF cleanly and prevent sticky freezes
+    function handleVisibilityChange() {
+      if (document.hidden) {
+        isRunning = false;
+        cancelAnimationFrame(animId);
+        mouse.active = false;
+        mouse.x = -9999;
+        mouse.y = -9999;
+      } else {
+        updateRect();
+        lastTime = performance.now();
+        if (!isRunning) {
+          isRunning = true;
+          animId = requestAnimationFrame(render);
+        }
+      }
+    }
+
+    document.addEventListener("visibilitychange", handleVisibilityChange, { passive: true });
+    window.addEventListener("blur", handlePointerLeave, { passive: true });
+
+    // Dark mode observer
+    const themeObserver = new MutationObserver(() => {
+      refreshSprites(true);
     });
-    document.addEventListener("mouseleave", handlePointerLeave);
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
 
-    function render() {
-      if (!ctx) return;
+    const radius = 135;
+
+    // Smooth render loop with time delta clamping (eliminates lag spikes)
+    function render(time: number = performance.now()) {
+      if (!ctx || !isRunning) return;
+
+      if (!lastTime) lastTime = time;
+      const elapsed = time - lastTime;
+      lastTime = time;
+      // Clamp dt to 1.0 ± 0.5 to keep drift silky smooth even after tab reactivation
+      const dt = Math.min(Math.max(elapsed / 16.667, 0.4), 2.0);
+
       ctx.clearRect(0, 0, width, height);
-
-      const isDark = document.documentElement.classList.contains("dark");
-      const baseColor = isDark ? "226, 232, 240" : "30, 41, 59";
-      const highlightColor = isDark ? "59, 130, 246" : "37, 99, 235"; // Vibrant Cobalt
-
-      const radius = 135; // Immediate interaction radius
 
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
+        const sp = sprites[p.formulaIndex];
+        if (!sp) continue;
 
-        // Particle center
         const cx = p.x + p.width / 2;
         const cy = p.y - p.height / 2;
 
@@ -299,17 +406,15 @@
           const dist = Math.sqrt(dx * dx + dy * dy);
 
           if (dist < radius && dist > 1) {
-            // Immediate deflection & repulsion every frame
-            const force = (1 - dist / radius) * 3.8;
+            const force = (1 - dist / radius) * 3.6;
             const nx = dx / dist;
             const ny = dy / dist;
 
-            p.vx += nx * force;
-            p.vy += ny * force;
+            p.vx += nx * force * dt;
+            p.vy += ny * force * dt;
 
-            // Immediate kinetic recoil displacement
-            p.x += nx * force * 0.9;
-            p.y += ny * force * 0.9;
+            p.x += nx * force * 0.85 * dt;
+            p.y += ny * force * 0.85 * dt;
 
             p.currentOpacity = 0.55;
             p.isEnergized = true;
@@ -320,7 +425,6 @@
           p.isEnergized = false;
         }
 
-        // Velocity damping back to natural ambient drift
         const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
         if (speed > 0.6) {
           p.vx *= 0.93;
@@ -330,16 +434,13 @@
           p.vy *= 1.05;
         }
 
-        // Fade opacity back smoothly
         if (!p.isEnergized) {
-          p.currentOpacity += (p.baseOpacity - p.currentOpacity) * 0.08;
+          p.currentOpacity += (p.baseOpacity - p.currentOpacity) * 0.08 * dt;
         }
 
-        // Advance position
-        p.x += p.vx;
-        p.y += p.vy;
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
 
-        // Clean edge bounce
         if (p.x < 10) {
           p.x = 10;
           p.vx = Math.abs(p.vx) * 0.85;
@@ -356,50 +457,43 @@
           p.vy = -Math.abs(p.vy) * 0.85;
         }
 
-        // Render rich math formula with LaTeX-style superscripts and subscripts
-        const color = p.isEnergized ? highlightColor : baseColor;
-        drawFormula(
-          ctx,
-          p.segments,
-          p.x,
-          p.y,
-          p.fontSize,
-          color,
-          p.currentOpacity,
+        ctx.globalAlpha = p.currentOpacity;
+        ctx.drawImage(
+          p.isEnergized ? sp.energizedCanvas : sp.normalCanvas,
+          Math.round(p.x),
+          Math.round(p.y - p.height * 0.7),
+          sp.width,
+          sp.height
         );
       }
 
+      ctx.globalAlpha = 1.0;
       animId = requestAnimationFrame(render);
     }
 
-    const observer = new ResizeObserver(() => {
+    const resizeObserver = new ResizeObserver(() => {
       resize();
     });
-    observer.observe(wrapper);
+    resizeObserver.observe(wrapper);
 
-    // If fonts load asynchronously, re-measure segments to ensure perfect spacing
+    // Initial immediate startup
+    resize();
+    isRunning = true;
+    lastTime = performance.now();
+    animId = requestAnimationFrame(render);
+
+    // Async font readiness (non-blocking, updates sprite metrics when web font arrives)
     if (document.fonts) {
       document.fonts.ready.then(() => {
-        if (!ctx) return;
-        for (const p of particles) {
-          const measured = measureSegments(ctx, p.parsed, p.fontSize);
-          p.segments = measured.segments;
-          p.width = measured.totalWidth;
-        }
+        refreshSprites(true);
       });
     }
-
-    resize();
-    render();
-
-    return () => {
-      cancelAnimationFrame(animId);
-      observer.disconnect();
-      window.removeEventListener("pointermove", handlePointerMove);
-      document.removeEventListener("mouseleave", handlePointerLeave);
-    };
   }
 
-  setupFormulaCanvas();
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupFormulaCanvas);
+  } else {
+    setupFormulaCanvas();
+  }
   document.addEventListener("astro:after-swap", setupFormulaCanvas);
 </script>

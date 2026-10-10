@@ -11,12 +11,17 @@ export interface Profile {
   role: string;
   subrole: string;
   affiliation: string;
+  siteTitle: string;
+  persianName: string;
+  persianRole: string;
+  siteUrl: string;
   location: string;
   bio: string[];
   researchStatement: string;
   researchInterests: string[];
   email: string;
   cvUrl: string;
+  pdfUrl: string;
   avatarUrl: string;
   status: {
     available: boolean;
@@ -31,6 +36,10 @@ export const profile: Profile = {
   role: "M.Sc. Student in Artificial Intelligence",
   subrole: "Sharif University of Technology",
   affiliation: "M.Sc. Student in AI @ SUT",
+  siteTitle: "Arman Heidari | M.Sc. in AI @ Sharif",
+  persianName: "آرمان حیدری",
+  persianRole: "دانشجوی کارشناسی ارشد هوش مصنوعی، دانشگاه صنعتی شریف",
+  siteUrl: "https://armanheidari.ir",
   location: "Tehran, Iran",
   bio: [
     "I am a Master's student in Artificial Intelligence at Sharif University of Technology. My background is rooted in Computer Engineering, where I spent years developing an enduring respect for algorithms, discrete mathematics, and systems programming.",
@@ -44,7 +53,8 @@ export const profile: Profile = {
     "Algorithmic Systems & First-Principles Engineering"
   ],
   email: "armanheidari192@gmail.com",
-  cvUrl: "/Arman_Heidari_Academic_CV.pdf",
+  cvUrl: "/cv",
+  pdfUrl: "/Arman_Heidari_Academic_CV.pdf",
   avatarUrl: "/images/arman-heidari.webp",
   status: {
     available: true,

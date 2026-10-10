@@ -14,14 +14,82 @@ interface Props {
 }
 
 const {
-  title = `${profile.name} | ${profile.role}`,
+  title = profile.siteTitle,
   description = profile.researchStatement,
   image = "/images/avatar.svg",
   article = false
 } = Astro.props;
 
-const canonicalURL = new URL(Astro.url.pathname, Astro.site || "https://armanheidari.github.io");
+const canonicalURL = new URL(Astro.url.pathname, Astro.site || "https://armanheidari.ir");
 const isHome = Astro.url.pathname === '/' || Astro.url.pathname === '';
+const fullImage = image.startsWith('http') ? image : new URL(image, canonicalURL).href;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "https://armanheidari.ir/#person",
+      "name": profile.name,
+      "alternateName": [
+        profile.persianName,
+        "Arman Heidari Sharif",
+        "آرمان حیدری شریف",
+        "آرمان حیدری دانشگاه شریف"
+      ],
+      "url": "https://armanheidari.ir",
+      "image": "https://armanheidari.ir/images/arman-heidari.webp",
+      "jobTitle": "Master's Student in Artificial Intelligence",
+      "description": `${profile.researchStatement} M.Sc. student at Sharif University of Technology.`,
+      "email": `mailto:${profile.email}`,
+      "affiliation": {
+        "@type": "CollegeOrUniversity",
+        "name": "Sharif University of Technology",
+        "alternateName": "دانشگاه صنعتی شریف",
+        "url": "https://www.sharif.edu"
+      },
+      "alumniOf": [
+        {
+          "@type": "CollegeOrUniversity",
+          "name": "Allameh Tabataba'i University",
+          "alternateName": "دانشگاه علامه طباطبائی",
+          "url": "https://atu.ac.ir"
+        }
+      ],
+      "knowsAbout": [
+        "Artificial Intelligence",
+        "هوش مصنوعی",
+        "Machine Learning",
+        "یادگیری ماشین",
+        "Deep Learning",
+        "یادگیری عمیق",
+        "Reinforcement Learning",
+        "یادگیری تقویتی",
+        "Computer Engineering",
+        "مهندسی کامپیوتر",
+        "Data Engineering"
+      ],
+      "sameAs": [
+        "https://scholar.google.com/citations?user=fgeLGrAAAAAJ&hl=en",
+        "https://orcid.org/0009-0005-7230-1878",
+        "https://github.com/armanheidari",
+        "https://www.linkedin.com/in/arman-heidari/",
+        "https://armanheidari.github.io"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://armanheidari.ir/#website",
+      "url": "https://armanheidari.ir",
+      "name": "Arman Heidari",
+      "description": "Academic portfolio and research hub of Arman Heidari at Sharif University of Technology",
+      "publisher": {
+        "@id": "https://armanheidari.ir/#person"
+      },
+      "inLanguage": ["en", "fa"]
+    }
+  ]
+};
 ---
 
 <!doctype html>
@@ -29,37 +97,69 @@ const isHome = Astro.url.pathname === '/' || Astro.url.pathname === '';
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/images/avatar.svg" />
+
+    <!-- Cache-busted Favicons & Touch Icons (Prevents stale browser/PDF tab logos) -->
+    <link rel="icon" href="/favicon.ico?v=2" sizes="any" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2" />
+    <link rel="shortcut icon" href="/favicon.ico?v=2" />
+    <link rel="apple-touch-icon" href="/images/arman-heidari.webp" />
     <link rel="canonical" href={canonicalURL} />
     <meta name="generator" content={Astro.generator} />
 
-    <!-- SEO Meta Tags -->
+    <!-- Search Engine Indexing & Robots Directives -->
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+
+    <!-- Primary SEO & Bilingual Discovery Meta Tags -->
     <title>{title}</title>
     <meta name="title" content={title} />
     <meta name="description" content={description} />
     <meta name="author" content={profile.name} />
+    <meta
+      name="keywords"
+      content="Arman Heidari, آرمان حیدری, دانشگاه صنعتی شریف, Sharif University of Technology, شریف, هوش مصنوعی, یادگیری ماشین, یادگیری تقویتی, Artificial Intelligence, Machine Learning, Deep Learning, Reinforcement Learning, Computer Engineering, مهندسی کامپیوتر, رزومه آرمان حیدری, Arman Heidari CV, Arman Heidari Portfolio, armanheidari.ir"
+    />
 
-    <!-- Open Graph / Facebook -->
+    <!-- Open Graph / Facebook / LinkedIn / Telegram -->
+    <meta property="og:site_name" content="Arman Heidari" />
     <meta property="og:type" content={article ? "article" : "website"} />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={image} />
+    <meta property="og:image" content={fullImage} />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="fa_IR" />
 
-    <!-- Twitter -->
+    <!-- Twitter / X -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content={canonicalURL} />
     <meta property="twitter:title" content={title} />
     <meta property="twitter:description" content={description} />
-    <meta property="twitter:image" content={image} />
+    <meta property="twitter:image" content={fullImage} />
 
-    <!-- Google Fonts Preconnect -->
+    <!-- AEO & Search Engine Knowledge Graph (JSON-LD) -->
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+    <!-- Google Fonts Preconnect & High-Performance Non-Blocking Loading -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
-      rel="stylesheet"
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
     />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      />
+    </noscript>
 
     <!-- Zero-FOUC Theme Script -->
     <script is:inline>

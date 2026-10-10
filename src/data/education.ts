@@ -190,7 +190,7 @@ export const educationList: EducationItem[] = [
       { name: "Fundamentals of Robotics", credits: 3, score: 16.58 },
     ],
     generalCourses: [
-      { name: "Calculus I", credits: 3, score: 20 },  
+      { name: "Calculus I", credits: 3, score: 20 },
       { name: "Calculus II", credits: 3, score: 20.0 },
       { name: "Physics I", credits: 3, score: 16.9 },
       { name: "Physics II", credits: 3, score: 20.0 },
@@ -226,7 +226,7 @@ export const awardsList: AwardItem[] = [
     year: "2026",
     description: "Achieved Rank 1 nationwide among 20,000+ candidates in the Computer Engineering group in the Iranian National Master's University Entrance Examination.",
     badge: "National Rank 1 / 20,000+",
-    highlight: "Scored highest nationally in Artificial Intelligence, Software Engineering, and Algorithms."
+    highlight: "Scored highest nationally in Artificial Intelligence, Data Structures & Algorithms."
   },
   {
     id: "valedictorian-atu",
