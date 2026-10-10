@@ -1,6 +1,6 @@
 # Arman Heidari — Academic Portfolio & Personal Hub
 
-[![Website](https://img.shields.io/badge/Live%20Site-armanheidari.github.io-blue?style=flat-square)](https://armanheidari.github.io)
+[![Website](https://img.shields.io/badge/Live%20Site-armanheidari.ir-blue?style=flat-square)](https://armanheidari.ir)
 [![Built with Astro](https://img.shields.io/badge/Built%20with-Astro%205-ff5d01?style=flat-square&logo=astro)](https://astro.build)
 [![Tailwind CSS](https://img.shields.io/badge/Styled%20with-Tailwind%20v4-38bdf8?style=flat-square&logo=tailwindcss)](https://tailwindcss.com)
 [![TypeScript](https://img.shields.io/badge/Language-TypeScript-3178c6?style=flat-square&logo=typescript)](https://www.typescriptlang.org)
@@ -8,7 +8,7 @@
 
 The personal academic website and research hub of **Arman Heidari**, M.Sc. Student in Artificial Intelligence at **Sharif University of Technology** (Tehran, Iran).
 
-Live portfolio: **[armanheidari.github.io](https://armanheidari.github.io)**
+Live portfolio: **[armanheidari.ir](https://armanheidari.ir)** (mirror: [armanheidari.github.io](https://armanheidari.github.io))
 
 ---
 

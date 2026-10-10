@@ -16,7 +16,7 @@ interface Props {
 const {
   title = profile.siteTitle,
   description = profile.researchStatement,
-  image = "/images/avatar.svg",
+  image = profile.avatarUrl || "/images/arman-heidari.webp",
   article = false
 } = Astro.props;
 
@@ -139,27 +139,6 @@ const jsonLd = {
 
     <!-- AEO & Search Engine Knowledge Graph (JSON-LD) -->
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
-
-    <!-- Google Fonts Preconnect & High-Performance Non-Blocking Loading -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="preload"
-      as="style"
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
-      media="print"
-      onload="this.media='all'"
-    />
-    <noscript>
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
-      />
-    </noscript>
 
     <!-- Zero-FOUC Theme Script -->
     <script is:inline>

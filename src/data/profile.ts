@@ -36,7 +36,7 @@ export const profile: Profile = {
   role: "M.Sc. Student in Artificial Intelligence",
   subrole: "Sharif University of Technology",
   affiliation: "M.Sc. Student in AI @ SUT",
-  siteTitle: "Arman Heidari | M.Sc. in AI @ Sharif",
+  siteTitle: "Arman Heidari | M.Sc. in AI @ SUT",
   persianName: "آرمان حیدری",
   persianRole: "دانشجوی کارشناسی ارشد هوش مصنوعی، دانشگاه صنعتی شریف",
   siteUrl: "https://armanheidari.ir",
